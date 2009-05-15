@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="UTF-8" ?> 
+<Module>
+<ModulePrefs title="最新一期六合彩結果"
+	 directory_title="六合彩結果"
+     description="提供最新一期六合彩結果. Latest Hong Kong Mark Six Lottery Draw Result."
+	 title_url="http://bet.hkjc.com/marksix/index.aspx?lang=ch"
+	 screenshot="http://floatingcat.googlepages.com/marksix.png"
+	 thumbnail="http://floatingcat.googlepages.com/marksixico.png"
+     scrolling="false"
+     singleton="false"
+     author="floatingcat"
+	 author_photo="http://floatingcat.googlepages.com/chunmiu.png"
+	 author_email="floatingcat@gmail.com"
+	 author_aboutme="I'm a developer come from Hong Kong, China. "
+     author_affiliation="Google"
+     author_location="Hong Kong, CHINA"
+     author_link="http://floatingcat.blogspot.com/"
+    category="news"
+    category2="lifestyle">
+	<Locale lang="zh-tw" country="hk"/>
+	<Require feature="tabs" /> 
+	<Require feature="dynamic-height"/>	
+	<Require feature="analytics"/>
+    <Require feature="settitle" />	
+</ModulePrefs>
+<Content type="html">
+<![CDATA[  
+<div id="content_div"></div>
+<script type="text/javascript">
+/*****************************************************************************
+	Extend String Object functions
+*****************************************************************************/	
+String.prototype.LZero = function(max) {
+	var sOut = this;
+	for ( var i = 0; i < max - this.length; i ++ ) {
+		sOut = "0"+ sOut;
+	}
+	return sOut;
+}
+/*****************************************************************************
+	Hong Kong MarkSix Result Widget
+*****************************************************************************/	
+var sMarkSixResultUrl = "http://bet.hkjc.com/marksix/index.aspx?lang=en";
+
+function fetchLuckyDrawResult(responseText) {
+	try {
+		var s;
+		var sResult = fnGetItem(responseText, "", "Last Draw</strong>", "</table>" );
+		// Get Draw Round Number
+		s = fnGetItem(sResult, "", "Draw Number : ", "</td>" );
+		var sDrawNumber = s.match(/(\d+)\/(\d+)/g);		
+		var saRoundNumber = sDrawNumber.toString().split("/")[1];
+		// Get Draw Date
+		s = fnGetItem(sResult, "", "Draw Date : ", "</td>" );
+		var sDrawDate = s.match(/(\d+)\/(\d+)\/(\d+)/g);
+		
+		var re = /no_(\d+).gif/g;
+		var saDrawResult = sResult.match(re);		
+		var saLuckyNumber = new Array();
+		for ( var i=0; i < saDrawResult.length; i ++ ) {
+			saLuckyNumber[i] = parseInt(saDrawResult[i].match(/(\d+)/g),10);
+		}
+		
+		var saPrizes = new Array(); // 派彩
+		sResult = fnGetItem(responseText, "", "indexMarkSix_lastDrawResultPrizeTable", "</table>" );
+//		alert(sResult.replace(/<[^<>]+>/ig, "|"));
+		
+		var re = /(\d{1,3}(\,\d{3})+)/g;
+		s = fnGetItem(sResult, "", "1st", "</tr>").match(re);
+		saPrizes[0] = s==null ? "無人中":"$"+s;
+		s = fnGetItem(sResult, "", "2nd", "</tr>").match(re);
+		saPrizes[1] = s==null ? "無人中":"$"+s;		
+		s = fnGetItem(sResult, "", "3rd", "</tr>").match(re);
+		saPrizes[2] = s==null ? "無人中":"$"+s;			
+		
+		sResult = fnGetItem(responseText, "", "Next Draw</td>", "Last Draw</strong>" );
+		var sNextDrawDate = fnGetItem(sResult, "Draw Date</td>", "\">", "</td>" ).match(/(\d+)\/(\d+)\/(\d+)/g);
+
+		sResult = fnGetItem(sResult, "Estimated 1st Division Prize Fund", "\">", "</td>" );
+		var sEstimated = sResult.match( re );
+
+        var tabs = new _IG_Tabs(__MODULE_ID__);
+		var tab_id1 = tabs.addTab("攪珠結果"); 
+		var tab_id2 = tabs.addTab("派彩"); 
+		var tab_id3 = tabs.addTab("下次攪珠"); 		
+
+		html = "<table style='width:100%' border='0' cellspacing='0'>";
+		html += "<tr style='background-color:#535353; color:#ffffff; padding:3px'>";
+//		html += "<td style='font-size:12pt;'>&nbsp;第"+ saRoundNumber +"期六合彩結果 </td></tr>";		
+		html += "<tr><td style='text-align:center; border:1px solid #535353; padding:4px'>";
+		for ( var i=0; i < saDrawResult.length; i ++ ) {
+			if ( i == 6 ) html += "<img src='http://bet.hkjc.com/marksix/info/images/en/icon_special_no.gif' style='vertical-align:middle;width:12px;height:12px'>";
+			
+			html += "<img src='http://bet.hkjc.com/marksix/info/images/icon/no_"+ saLuckyNumber[i].toString().LZero(2) +".gif' alt='"+ saLuckyNumber[i] +"' style='vertical-align:middle;width:32px;height:35px'>";			
+		}		
+		html += "</td></tr><tr><td style='font-size:9pt; text-align:right'>";
+		html += " 攪珠日期 : "+ sDrawDate +" </td></tr></table>";		
+        _gel(tab_id1).innerHTML = html;
+		
+		html = "<table style='width:100%' border='0' cellspacing='0'>";
+		html += "<tr style='background-color:#535353; color:#ffffff; padding:3px'>";
+//		html += "<td style='font-size:12pt;'>&nbsp;第"+ saRoundNumber +"期六合彩派彩 </td></tr>";		
+		html += "<tr><td style='border:1px solid #535353; padding:4px'>";
+		html += "<font size='2'>頭獎 : </font>"+ saPrizes[0] +" <br/>";
+		html += "<font size='2'>二獎 : </font>"+ saPrizes[1] +" <br/>";
+		html += "<font size='2'>三獎 : </font>"+ saPrizes[2] +" ";
+		html += "</td></tr></table>";
+		_gel(tab_id2).innerHTML = html;
+		
+		html = "<table style='width:100%' border='0' cellspacing='0'>";
+		html += "<tr><td style='border:1px solid #535353; padding:4px'>";
+		html += "<font size='2'>下次攪珠日期 : </font>"+ sNextDrawDate +" <br/>";
+		html += "<font size='2'>估計頭獎基金 : </font> $"+ sEstimated;
+		html += "</td></tr></table>";
+		_gel(tab_id3).innerHTML = html;		
+		
+		_IG_SetTitle("第 "+ saRoundNumber +" 期六合彩結果");
+		
+	} catch(e) {
+		_gel(tab_id1).innerHTML = "對不起, 暫時未能提供";
+		return false;
+	}
+	return true;
+}
+
+function cbTabContent(tabId, content) {
+	_gel(tabId).innerHTML = content;
+}
+
+function showExtraInfo() {
+	var el = _gel('extra_info');
+	if ( el.style != null ) {
+		el.style.display = el.style.display=="none" ? "" : "none";
+	}
+}
+//======================================
+// Find data from HTML
+function fnGetItem(s, sHeader, sBegin, sEnd) {
+	var spos = 0, epos = 0;
+	spos = s.indexOf(sHeader);
+	spos = s.indexOf(sBegin, spos);
+	epos = s.indexOf(sEnd, spos);
+	return s.substring(spos + sBegin.length , epos);
+}
+//======================================
+function getCartoonPic( cartoonNum ) {
+	return "pic"+ cartoonNum +".png";
+}
+/*****************************************************************************
+	Main function
+*****************************************************************************/	
+function showInfo() {
+	_gel('content_div').innerHTML = "";
+	// Get Lastest Lucky Draw Result
+	_IG_FetchContent(sMarkSixResultUrl, _IG_Callback(fetchLuckyDrawResult));
+	_IG_AdjustIFrameHeight();
+	_IG_Analytics("UA-760829-2", "/marksix");
+}	 
+_IG_RegisterOnloadHandler(showInfo);
+</script>
+  ]]>
+  </Content>
+</Module>
