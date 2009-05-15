@@ -43,7 +43,7 @@
 <style type="text/css">
 #oSetup { display:none }
 #oSchedule { display:block }
-
+#oToolbar { width:100%; text-align:center }
 #oTimeLine { width:26px; position:static; overflow:hidden; word-break:keep-all; padding:0px; border-right:1px solid #ccc; }
 #oTimeLine div { font-size:7pt; height:30px; border:0px; border-bottom:1px solid #ccc; text-align:center; }
 #oTimeLine div span { font-size:6pt; vertical-align:super; }
@@ -58,74 +58,59 @@ div.pgm a { color:#000 }
 #oScrollGrid { height:240px; overflow:scroll; overflow-x:hidden; overflow-y:hidden; border:1px solid #ccc }
 #oDate { width:120px; vertical-align:top; padding:1px; }
 </style>
+
 <img src="http://www.gmodules.com/ig/proxy?url=http://labajax.googlepages.com/hkepg_date.png" alt=" 選擇日期 " title=" 選擇日期 " onClick="fnShowDate();" />
-<span id="oDate"></span>
-&nbsp;
+<span id="oDate"></span>&nbsp;
 <img src="http://www.gmodules.com/ig/proxy?url=http://labajax.googlepages.com/hkepg_zoomin.png" alt="[ 時間軸放大 ]" title="[ 時間軸放大 ]" onClick="fnZoom(1);" />
 <img src="http://www.gmodules.com/ig/proxy?url=http://labajax.googlepages.com/hkepg_zoomout.png" alt="[ 時間軸縮小 ]" title="[ 時間軸縮小 ]" onClick="fnZoom(-1);" />
 <img src="http://www.gmodules.com/ig/proxy?url=http://floatingcat.googlepages.com/ico01.png" alt="[ 最愛頻道 ]" title="[ 最愛頻道 ]" onClick="fnLoadSetup();" />
 
 <div id="oSetup">
-	<table style="width:100%"><tr><td>
-	頻道排列 <br/>
-	<select id="ddlFavorite" size="12"></select><br/>
-	<input type="button" value="向上" onClick="fnItemUp();">
-	<input type="button" value="向下" onClick="fnItemDown();">
-	</td></tr>
-	
-	<tr><td align="right">	
-	<input type="button" value="確定" onClick="fnSaveSetup();">
-	<input type="button" value="返回" onClick="fnCancelSetup(false);">
-	</td></tr>
-	</table>
+<table style="width:100%"><tr><td> 頻道排列 <br/>
+<select id="ddlFavorite" size="12"></select><br/>
+<input type="button" value="向上" onClick="fnItemUp();" />
+<input type="button" value="向下" onClick="fnItemDown();" />
+</td></tr><tr><td align="right">
+<input type="button" value="確定" onClick="fnSaveSetup();" />
+<input type="button" value="返回" onClick="fnCancelSetup(false);" />
+</td></tr></table>
 </div>
 
 <div id="oSchedule">
-<table class="fixtbl" border="0" cellpadding="0" cellspacing="0">
-	<tr>
-		<td><div class="timeline"></div></td>
-		<td><div id="oLogo0" class="logo">&nbsp;</div></td>
-		<td><div id="oLogo1" class="logo">&nbsp;</div></td>
-		<td><div id="oLogo2" class="logo">&nbsp;</div></td>
-		<td><div id="oLogo3" class="logo">&nbsp;</div></td>
-		<td><div id="oLogo4" class="logo">&nbsp;</div></td>
-		<td><div id="oLogo5" class="logo">&nbsp;</div></td>
-		<td><div id="oLogo6" class="logo">&nbsp;</div></td>
-		<td><div id="oLogo7" class="logo">&nbsp;</div></td>
-	</tr>
-</table>
+<table class="fixtbl" border="0" cellpadding="0" cellspacing="0"><tr>
+<td><div class="timeline"></div></td>
+<td><div id="oLogo0" class="logo">&nbsp;</div></td>
+<td><div id="oLogo1" class="logo">&nbsp;</div></td>
+<td><div id="oLogo2" class="logo">&nbsp;</div></td>
+<td><div id="oLogo3" class="logo">&nbsp;</div></td>
+<td><div id="oLogo4" class="logo">&nbsp;</div></td>
+<td><div id="oLogo5" class="logo">&nbsp;</div></td>
+<td><div id="oLogo6" class="logo">&nbsp;</div></td>
+<td><div id="oLogo7" class="logo">&nbsp;</div></td>
+</tr></table>
 
 <div id="oScrollGrid">
-	<table class="fixtbl" border="0" cellpadding="0" cellspacing="0">
-		<tr><td>
-			<div id="oTimeLine" class="timeline"></div>
-		</td><td>
-			<div id="oCh0" class="PgmCol">Channel 1</div>
-		</td><td>
-			<div id="oCh1" class="PgmCol">Channel 2</div>
-		</td><td>
-			<div id="oCh2" class="PgmCol">Channel 3</div>
-		</td><td>
-			<div id="oCh3" class="PgmCol">Channel 4</div>
-		</td><td>
-			<div id="oCh4" class="PgmCol">Channel 5</div>
-		</td><td>
-			<div id="oCh5" class="PgmCol">Channel 6</div>
-		</td><td>
-			<div id="oCh6" class="PgmCol">Channel 7</div>	
-		</td><td>
-			<div id="oCh7" class="PgmCol">Channel 8</div>												
-		</td></tr>
-	</table>
+<table class="fixtbl" border="0" cellpadding="0" cellspacing="0"><tr>
+<td><div id="oTimeLine" class="timeline"></div></td>
+<td><div id="oCh0" class="PgmCol">Channel 1</div></td>
+<td><div id="oCh1" class="PgmCol">Channel 2</div></td>
+<td><div id="oCh2" class="PgmCol">Channel 3</div></td>
+<td><div id="oCh3" class="PgmCol">Channel 4</div></td>
+<td><div id="oCh4" class="PgmCol">Channel 5</div></td>
+<td><div id="oCh5" class="PgmCol">Channel 6</div></td>
+<td><div id="oCh6" class="PgmCol">Channel 7</div></td>
+<td><div id="oCh7" class="PgmCol">Channel 8</div></td>
+</tr></table>
 </div>
-<div style="width:100%;text-align:center;">
-<img src="http://www.gmodules.com/ig/proxy?url=http://labajax.googlepages.com/hkepg_prev.png" alt="[ << 上一個頻道 ]" title="[ << 上一個頻道 ]" onClick="fnMoveCh(-1);" />
+
+<div id="oToolbar">
+<img src="http://www.gmodules.com/ig/proxy?url=http://labajax.googlepages.com/hkepg_prev.png" alt="[ 上一個頻道 ]" title="[ 上一個頻道 ]" onClick="fnMoveCh(-1);" />
 &nbsp;
 <img src="http://www.gmodules.com/ig/proxy?url=http://labajax.googlepages.com/hkepg_up.png" alt="[時間軸向上]" title="[時間軸向上]" onClick="fnScroll(-1);" />
 <img src="http://www.gmodules.com/ig/proxy?url=http://labajax.googlepages.com/hkepg_clock.png" alt="[現正播放]" title="[現正播放]" onClick="fnScroll(0);" />
 <img src="http://www.gmodules.com/ig/proxy?url=http://labajax.googlepages.com/hkepg_down.png" alt="[時間軸向下]" title="[時間軸向下]" onClick="fnScroll(1);" />
 &nbsp;
-<img src="http://www.gmodules.com/ig/proxy?url=http://labajax.googlepages.com/hkepg_next.png" alt="[ 下一個頻道 >> ]" title="[ 下一個頻道 >> ]" onClick="fnMoveCh(1);" />
+<img src="http://www.gmodules.com/ig/proxy?url=http://labajax.googlepages.com/hkepg_next.png" alt="[ 下一個頻道 ]" title="[ 下一個頻道 ]" onClick="fnMoveCh(1);" />
 </div>
 </div>
 
@@ -151,6 +136,10 @@ String.prototype.LZero = function(max) {
 String.prototype.trim = function() {
 	var m = this.match(/^\s*(\S+(\s+\S+)*)\s*$/);
 	return (m == null) ? "" : m[1];	
+}
+String.prototype.removeSpace = function() {
+	var m = this.replace(/\s+/gi, "");
+	return (m == null) ? "" : m;
 }
 String.prototype.removeHTMLTag = function() {
 	var m = this.replace(/(<([^>]+)>)/gi, "");
