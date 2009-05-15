@@ -1,0 +1,787 @@
+<?xml version="1.0" encoding="UTF-8" ?> 
+<Module>
+<ModulePrefs title="香港電視節目表" 
+	directory_title="EPG"
+	description="提供七日香港電視節目表. Provide Most Updated 7 days EPG Info in Hong Kong."
+	title_url="http://floatingcat.googlepages.com"
+	screenshot="http://labajax.googlepages.com/hkepgscr.png"
+	thumbnail="http://labajax.googlepages.com/hkepgico.png"
+	width="300"
+	height="320"
+	scrolling="false"
+	singleton="false"
+	author="floatingcat"
+	author_photo="http://floatingcat.googlepages.com/chunmiu.png"
+	author_email="floatingcat@gmail.com"
+	author_aboutme="I'm a developer come from Hong Kong, China. "
+	author_affiliation="Google"
+	author_location="Hong Kong"
+	author_link="http://floatingcat.blogspot.com/"
+    category="news"
+    category2="lifestyle">
+	<Locale lang="zh-tw" country="hk"/>    
+	<Require feature="dynamic-height"/>	
+	<Require feature="analytics"/>	
+	<Require feature="setprefs" /> 
+	<Require feature="settitle" /> 
+</ModulePrefs>
+
+<UserPref name="zoom" 
+     display_name="Zoom"
+     datatype="enum"
+     default_value="1">
+  <EnumValue value="0" display_value="Small (x0.5)"/>
+  <EnumValue value="1" display_value="Normal (x1)"/>
+  <EnumValue value="2" display_value="Large (x2)"/>
+  <EnumValue value="3" display_value="Very Larget (x4)"/>
+</UserPref>
+<UserPref name="favorites" display_name="Favorites Channels" datatype="hidden" />
+
+<Content type="html">
+<![CDATA[
+<div id="content_div">
+<style type="text/css">
+#oSetup { display:none }
+#oSchedule { display:block }
+
+#oTimeLine { width:26px; position:static; overflow:hidden; word-break:keep-all; padding:0px; border-right:1px solid #ccc; }
+#oTimeLine div { font-size:7pt; height:30px; border:0px; border-bottom:1px solid #ccc; text-align:center; }
+#oTimeLine div span { font-size:6pt; vertical-align:super; }
+td { vertical-align:top; padding:0px; margin:0px; }
+table.fixtbl { overflow:hidden; padding:0px; border:0px; margin:0px; font-family:Arial; font-size:9pt; }
+div.timeline { width:26px; }
+div.logo { width:120px; height:18px; text-align:center; font-weight:bold; }
+div.PgmCol { width:120px; border:0px; padding:0px; border-right:1px solid #ccc; background-color:#fff; }
+div.pgm { border:0px; border-bottom:1px solid #ccc; width:118px; padding:0px; height:1px; text-overflow:ellipsis; overflow:hidden; }
+div.pgm a { color:#000 }
+
+#oScrollGrid { height:240px; overflow:scroll; overflow-x:hidden; overflow-y:hidden; border:1px solid #ccc }
+#oDate { width:120px; vertical-align:top; padding:1px; }
+</style>
+<img src="http://www.gmodules.com/ig/proxy?url=http://labajax.googlepages.com/hkepg_date.png" alt=" 選擇日期 " title=" 選擇日期 " onClick="fnShowDate();" />
+<span id="oDate"></span>
+&nbsp;
+<img src="http://www.gmodules.com/ig/proxy?url=http://labajax.googlepages.com/hkepg_zoomin.png" alt="[ 時間軸放大 ]" title="[ 時間軸放大 ]" onClick="fnZoom(1);" />
+<img src="http://www.gmodules.com/ig/proxy?url=http://labajax.googlepages.com/hkepg_zoomout.png" alt="[ 時間軸縮小 ]" title="[ 時間軸縮小 ]" onClick="fnZoom(-1);" />
+<img src="http://www.gmodules.com/ig/proxy?url=http://floatingcat.googlepages.com/ico01.png" alt="[ 最愛頻道 ]" title="[ 最愛頻道 ]" onClick="fnLoadSetup();" />
+
+<div id="oSetup">
+	<table style="width:100%"><tr><td>
+	頻道排列 <br/>
+	<select id="ddlFavorite" size="12"></select><br/>
+	<input type="button" value="向上" onClick="fnItemUp();">
+	<input type="button" value="向下" onClick="fnItemDown();">
+	</td></tr>
+	
+	<tr><td align="right">	
+	<input type="button" value="確定" onClick="fnSaveSetup();">
+	<input type="button" value="返回" onClick="fnCancelSetup(false);">
+	</td></tr>
+	</table>
+</div>
+
+<div id="oSchedule">
+<table class="fixtbl" border="0" cellpadding="0" cellspacing="0">
+	<tr>
+		<td><div class="timeline"></div></td>
+		<td><div id="oLogo0" class="logo">&nbsp;</div></td>
+		<td><div id="oLogo1" class="logo">&nbsp;</div></td>
+		<td><div id="oLogo2" class="logo">&nbsp;</div></td>
+		<td><div id="oLogo3" class="logo">&nbsp;</div></td>
+		<td><div id="oLogo4" class="logo">&nbsp;</div></td>
+		<td><div id="oLogo5" class="logo">&nbsp;</div></td>
+		<td><div id="oLogo6" class="logo">&nbsp;</div></td>
+		<td><div id="oLogo7" class="logo">&nbsp;</div></td>
+	</tr>
+</table>
+
+<div id="oScrollGrid">
+	<table class="fixtbl" border="0" cellpadding="0" cellspacing="0">
+		<tr><td>
+			<div id="oTimeLine" class="timeline"></div>
+		</td><td>
+			<div id="oCh0" class="PgmCol">Channel 1</div>
+		</td><td>
+			<div id="oCh1" class="PgmCol">Channel 2</div>
+		</td><td>
+			<div id="oCh2" class="PgmCol">Channel 3</div>
+		</td><td>
+			<div id="oCh3" class="PgmCol">Channel 4</div>
+		</td><td>
+			<div id="oCh4" class="PgmCol">Channel 5</div>
+		</td><td>
+			<div id="oCh5" class="PgmCol">Channel 6</div>
+		</td><td>
+			<div id="oCh6" class="PgmCol">Channel 7</div>	
+		</td><td>
+			<div id="oCh7" class="PgmCol">Channel 8</div>												
+		</td></tr>
+	</table>
+</div>
+<div style="width:100%;text-align:center;">
+<img src="http://www.gmodules.com/ig/proxy?url=http://labajax.googlepages.com/hkepg_prev.png" alt="[ << 上一個頻道 ]" title="[ << 上一個頻道 ]" onClick="fnMoveCh(-1);" />
+&nbsp;
+<img src="http://www.gmodules.com/ig/proxy?url=http://labajax.googlepages.com/hkepg_up.png" alt="[時間軸向上]" title="[時間軸向上]" onClick="fnScroll(-1);" />
+<img src="http://www.gmodules.com/ig/proxy?url=http://labajax.googlepages.com/hkepg_clock.png" alt="[現正播放]" title="[現正播放]" onClick="fnScroll(0);" />
+<img src="http://www.gmodules.com/ig/proxy?url=http://labajax.googlepages.com/hkepg_down.png" alt="[時間軸向下]" title="[時間軸向下]" onClick="fnScroll(1);" />
+&nbsp;
+<img src="http://www.gmodules.com/ig/proxy?url=http://labajax.googlepages.com/hkepg_next.png" alt="[ 下一個頻道 >> ]" title="[ 下一個頻道 >> ]" onClick="fnMoveCh(1);" />
+</div>
+</div>
+
+<script type="text/javascript">
+/*****************************************************************************
+	Extended String Object functions
+*****************************************************************************/
+Array.prototype.exists = function(find) {
+	for (var i=0; i < this.length; i ++ ) {
+		if ( this[i] == find ) {
+			return true;
+		}
+	}	
+	return false;
+}
+String.prototype.LZero = function(max) {
+	var sOut = this;
+	for ( var i = 0; i < max - this.length; i ++ ) {
+		sOut = "0"+ sOut;
+	}
+	return sOut;
+}
+String.prototype.trim = function() {
+	var m = this.match(/^\s*(\S+(\s+\S+)*)\s*$/);
+	return (m == null) ? "" : m[1];	
+}
+String.prototype.removeHTMLTag = function() {
+	var m = this.replace(/(<([^>]+)>)/gi, "");
+	return (m == null) ? "" : m;
+}
+String.prototype.setHTMLTagAttribute = function(sTag, sAttribute, sNewVal) {
+	var tag = document.createElement("span");
+	tag.innerHTML = this;
+	var child = tag.getElementsByTagName(sTag);
+	for ( var i=0; i < child.length; i ++ ) {
+		child[i].setAttribute(sAttribute, sNewVal);
+	}
+	return tag.innerHTML;
+}
+String.prototype.toDate = function() {
+	return new Date(this.substr(0,4), parseInt(this.substr(4,2),10) - 1, this.substr(6,2));
+}
+String.prototype.removeAdWord = function() {
+	var saAdWord = ["特約：", "呈獻：", "劇場：", "特約)", "呈獻)", "劇場)", "特約 :", "劇場 :", "贊助 :"];
+	var m = this;
+	var s = "";
+	for ( var i=0; i < saAdWord.length; i ++ ) {
+		var spos = 0;
+		var epos = m.indexOf(saAdWord[i]);
+		if ( epos > 0 ) {
+			//spos = m.substring(0, epos).lastIndexOf(" ");
+			spos = m.lastIndexOf("／", epos);
+			if ( spos == -1 ) spos = m.lastIndexOf(" ", epos);
+			if ( spos == epos -1 || spos == -1) spos = 0;
+			s = m.substring( spos +  (spos==0?0:1), epos + saAdWord[i].length);
+			m = m.replace(s, " ");
+		}
+	}
+	return (m == null) ? "" : m;
+}
+String.prototype.replacePgmAttribute = function() {
+	var saAdWord = [ 
+		["(PG)", " <img src='http://img.tvb.com/p/web/images/schedule/PG.gif' alt='家長指引' />"],
+		["<PG>", " <img src='http://img.tvb.com/p/web/images/schedule/PG.gif' alt='家長指引' />"],
+		["＜PG＞", " <img src='http://img.tvb.com/p/web/images/schedule/PG.gif' alt='家長指引' />"],		
+		["(M)", " <img src='http://img.tvb.com/p/web/images/schedule/C.gif' alt='成人收看' />"],
+		["(CS)", " <img src='http://img.tvb.com/p/web/images/schedule/C.gif' alt='中文字幕' />"],
+		["（CS）", " <img src='http://img.tvb.com/p/web/images/schedule/C.gif' alt='中文字幕' />"],
+		["(CS）", " <img src='http://img.tvb.com/p/web/images/schedule/C.gif' alt='中文字幕' />"],
+		["(S)", " <img src='http://img.tvb.com/p/web/images/schedule/C.gif' alt='中文字幕' />"],
+		["(S*)", " <img src='http://img.tvb.com/p/web/images/schedule/E.gif' alt='英文字幕' />"],
+		["(S**)", " <img src='http://img.tvb.com/p/web/images/schedule/C.gif' alt='中文字幕' /> <img src='http://img.tvb.com/p/web/images/schedule/E.gif' alt='英文字幕' />"],
+		["(R)", " <img src='http://img.tvb.com/p/web/images/schedule/R.gif' alt='重播' />"],
+		["(重播)", " <img src='http://img.tvb.com/p/web/images/schedule/R.gif' alt='重播' />"],
+		["（重播）", " <img src='http://img.tvb.com/p/web/images/schedule/R.gif' alt='重播' />"]
+	];
+	var m = this;
+	var s = "";
+	for ( var i=0; i < saAdWord.length; i ++ ) {
+		var epos = m.indexOf(saAdWord[i][0]);
+		if ( epos > 0 ) {
+			m = m.replace(saAdWord[i][0], saAdWord[i][1]);
+		}
+	}
+	return (m == null) ? "" : m;
+}
+Date.prototype.isSameWeekForATV = function() {
+	var now = new Date();
+	var today = now.getDay();
+	if ( today == 0 ) today = 7;
+	var curday = this.getDay();
+	if ( curday == 0 ) curday = 7;
+	return (　curday >= today );
+}
+Date.prototype.toDateString = function(sFormat) {
+	var this_y = this.getFullYear();
+	var this_m = this.getMonth() + 1;
+	var this_d = this.getDate();
+	
+	if ( sFormat == "yyyymmdd" ) {
+		return this_y + this_m.toString().LZero(2) + this_d.toString().LZero(2);
+	}
+	if ( sFormat == "yyyy_mm_dd" ) {
+		return this_y +"_"+ this_m.toString().LZero(2) +"_"+ this_d.toString().LZero(2);
+	}
+	if ( sFormat == "yyyy-mm-dd" ) {
+		return this_y +"-"+ this_m.toString().LZero(2) +"-"+ this_d.toString().LZero(2);
+	}
+	if ( sFormat == "-n" ) {
+		return this.isSameWeekForATV() ? "" :　"-n";
+	}
+	return this;
+}
+
+function getNodeValue(obj) {
+	return obj[0].firstChild.nodeValue;
+}
+//---------------------------------------------------------------------------
+var isIE = navigator.userAgent.toLowerCase().indexOf("msie") > 0 ? true : false;  
+var isFireFox = navigator.userAgent.toLowerCase().indexOf("firefox") > 0 ? true : false;
+
+var ZoomIndex = [1,2,4,8];
+var g_zoom = 1;
+var g_fav = "";	// Favorite channels list in csv format
+var g_lastch = 0;
+var g_chsCanShow = 0; // how many channels can show on screen
+var g_lastScrollTop = 0;
+var borderOffset = -1;
+var saWeekday = [ "日", "一", "二", "三", "四", "五", "六" ];
+var oChannel = { "preset": [
+        {"tune":"1", "officalUrl":"http://schedule.tvb.com/jade/", "url":"http://schedule.tvb.com/jade/%date%.html", "dtFormat":"yyyymmdd", "parser":"fnParseTVB", "logo":"翡翠台" },
+        {"tune":"2", "officalUrl":"http://www.hkatv.com/v3/schedule/schedule-home.html", "url":"http://www.hkatv.com/v3/schedule/schedule-home%date%.html", "dtFormat":"-n", "parser":"fnParseATV", "logo":"本港台" },
+		{"tune":"3", "officalUrl":"http://schedule.tvb.com/pearl/", "url":"http://schedule.tvb.com/pearl/%date%.html", "dtFormat":"yyyymmdd", "parser":"fnParseTVB", "logo":"明珠台" },
+        {"tune":"4", "officalUrl":"http://www.hkatv.com/v3/schedule/schedule-world.html", "url":"http://www.hkatv.com/v3/schedule/schedule-world%date%.html", "dtFormat":"-n", "parser":"fnParseATV", "logo":"國際台" },
+		{"tune":"85", "officalUrl":"http://schedule.tvb.com/hdjade/", "url":"http://schedule.tvb.com/hdjade/%date%.html", "dtFormat":"yyyymmdd", "parser":"fnParseTVB", "logo":"高清翡翠台" },
+		{"tune":"82", "officalUrl":"http://schedule.tvb.com/j2/", "url":"http://schedule.tvb.com/j2/%date%.html", "dtFormat":"yyyymmdd", "parser":"fnParseTVB", "logo":"J2" },
+		
+ 		{"tune":"111", "officalUrl":"http://now-tv.netvigator.com/chi/full_schedule.html?channel=111", "url":"http://now-tv.netvigator.com/chi/scheduler/channel/111/%date%.xml", "dtFormat":"yyyy_mm_dd", "parser":"fnParseNOW", "logo":"HBO Hit"}, 
+ 		{"tune":"112", "officalUrl":"http://now-tv.netvigator.com/chi/full_schedule.html?channel=112", "url":"http://now-tv.netvigator.com/chi/scheduler/channel/112/%date%.xml", "dtFormat":"yyyy_mm_dd", "parser":"fnParseNOW", "logo":"HBO Family" },
+		{"tune":"139", "officalUrl":"http://now-tv.netvigator.com/chi/full_schedule.html?channel=139", "url":"http://now-tv.netvigator.com/chi/scheduler/channel/139/%date%.xml", "dtFormat":"yyyy_mm_dd", "parser":"fnParseNOW", "logo":"衛視電影台" },
+		{"tune":"140", "officalUrl":"http://now-tv.netvigator.com/chi/full_schedule.html?channel=140", "url":"http://now-tv.netvigator.com/chi/scheduler/channel/140/%date%.xml", "dtFormat":"yyyy_mm_dd", "parser":"fnParseNOW", "logo":"衛視電影2台" },
+		{"tune":"147", "officalUrl":"http://now-tv.netvigator.com/chi/full_schedule.html?channel=147", "url":"http://now-tv.netvigator.com/chi/scheduler/channel/147/%date%.xml", "dtFormat":"yyyy_mm_dd", "parser":"fnParseNOW", "logo":"天映亞洲" },
+		{"tune":"222", "officalUrl":"http://now-tv.netvigator.com/chi/full_schedule.html?channel=222", "url":"http://now-tv.netvigator.com/chi/scheduler/channel/222/%date%.xml", "dtFormat":"yyyy_mm_dd", "parser":"fnParseNOW", "logo":"Bio" },
+		{"tune":"223", "officalUrl":"http://now-tv.netvigator.com/chi/full_schedule.html?channel=223", "url":"http://now-tv.netvigator.com/chi/scheduler/channel/223/%date%.xml", "dtFormat":"yyyy_mm_dd", "parser":"fnParseNOW", "logo":"History" },
+		{"tune":"512", "officalUrl":"http://now-tv.netvigator.com/chi/full_schedule.html?channel=512", "url":"http://now-tv.netvigator.com/chi/scheduler/channel/512/%date%.xml", "dtFormat":"yyyy_mm_dd", "parser":"fnParseNOW", "logo":"ANX" },
+
+ 		{"tune":"366", "officalUrl":"http://now-tv.netvigator.com/chi/full_schedule.html?channel=366", "url":"http://now-tv.netvigator.com/chi/scheduler/channel/366/%date%.xml", "dtFormat":"yyyy_mm_dd", "parser":"fnParseNOW", "logo":"鳳凰衛視資訊台" },
+ 		{"tune":"548", "officalUrl":"http://now-tv.netvigator.com/chi/full_schedule.html?channel=548", "url":"http://now-tv.netvigator.com/chi/scheduler/channel/548/%date%.xml", "dtFormat":"yyyy_mm_dd", "parser":"fnParseNOW", "logo":"鳳凰衛視中文台" },
+		{"tune":"631", "officalUrl":"http://now-tv.netvigator.com/chi/full_schedule.html?channel=631", "url":"http://now-tv.netvigator.com/chi/scheduler/channel/631/%date%.xml", "dtFormat":"yyyy_mm_dd", "parser":"fnParseNOW", "logo":"now Sports 1" },
+		{"tune":"632", "officalUrl":"http://now-tv.netvigator.com/chi/full_schedule.html?channel=632", "url":"http://now-tv.netvigator.com/chi/scheduler/channel/632/%date%.xml", "dtFormat":"yyyy_mm_dd", "parser":"fnParseNOW", "logo":"NOW Sports 2" },
+		{"tune":"660", "officalUrl":"http://now-tv.netvigator.com/chi/full_schedule.html?channel=660", "url":"http://now-tv.netvigator.com/chi/scheduler/channel/660/%date%.xml", "dtFormat":"yyyy_mm_dd", "parser":"fnParseNOW", "logo":"NOW Sports HD" },
+		
+        {"tune":"12", "officalUrl":"http://www.hkatv.com/v3/schedule/schedule-19.html", "url":"http://www.hkatv.com/v3/schedule/schedule-19%date%.html", "dtFormat":"-n", "parser":"fnParseATV", "logo":"aTV 亞洲高清台" },
+        {"tune":"14", "officalUrl":"http://www.hkatv.com/v3/schedule/schedule-20.html", "url":"http://www.hkatv.com/v3/schedule/schedule-20%date%.html", "dtFormat":"-n", "parser":"fnParseATV", "logo":"aTV 中天亞洲台" },
+        {"tune":"15", "officalUrl":"http://www.hkatv.com/v3/schedule/schedule-17.html", "url":"http://www.hkatv.com/v3/schedule/schedule-17%date%.html", "dtFormat":"-n", "parser":"fnParseATV", "logo":"aTV 央視中文國際頻道" }
+	]
+};
+
+var oRegisterChannel = { "preset" : [
+		{"slot":"fnParseSlot1", "parser":"", "logo":"", "officalUrl":"" },
+		{"slot":"fnParseSlot2", "parser":"", "logo":"", "officalUrl":"" },
+		{"slot":"fnParseSlot3", "parser":"", "logo":"", "officalUrl":"" },
+		{"slot":"fnParseSlot4", "parser":"", "logo":"", "officalUrl":"" },
+		{"slot":"fnParseSlot5", "parser":"", "logo":"", "officalUrl":"" },
+		{"slot":"fnParseSlot6", "parser":"", "logo":"", "officalUrl":"" },
+		{"slot":"fnParseSlot7", "parser":"", "logo":"", "officalUrl":"" },
+		{"slot":"fnParseSlot8", "parser":"", "logo":"", "officalUrl":"" }		
+	]
+};
+function fnGetChannelInfoByTune(tune) {
+	for ( var i=0; i < oChannel.preset.length; i ++ ) {
+		if ( oChannel.preset[i].tune == tune ){
+			return oChannel.preset[i];
+		}
+	}
+	return null;
+}
+function fnGetChannelIndexByTune(tune) {
+	for ( var i=0; i < oChannel.preset.length; i ++ ) {
+		if ( oChannel.preset[i].tune == tune ){
+			return i;
+		}
+	}
+	return -1;
+}
+// -------------------------------
+// Program Data Object
+// This object is used to store each programme's title, start time and duration.
+function pgmData(sTitle, sStart, lDuration) {
+	// properties
+	var m_t = sTitle.toString().removeAdWord();
+	var m_s = sStart.toString().removeHTMLTag();
+	var m_d = lDuration;
+	// properties get
+	this.start = m_s;
+	this.title = m_t
+	this.duration = m_d;
+	// properties set
+	this.setStart = function(sVal) {
+		m_s = sVal;
+	};	
+	this.setTitle = function(sVal) {
+		m_t = sVal;
+	};
+	this.setDuration = function(lVal) {
+		m_d = lVal;
+	};
+	// method
+	this.toDOM = function(zoomIdx) {
+		var lHeight = (parseInt(m_d,10) * zoomIdx) + (isFireFox ? borderOffset : 0);
+		var el = document.createElement("div");
+		if ( !isNaN(lHeight) ) {
+			var styleData = "height:"+ lHeight.toString() +"px";
+			if ( isIE ) {
+				el.style.setAttribute("cssText", styleData);
+			} else {			
+				el.setAttribute("style", styleData);
+			}
+		}
+		el.setAttribute("class", "pgm");
+		el.setAttribute("className", "pgm");
+		el.setAttribute("title", m_s +"  "+ m_t.toString().removeHTMLTag());
+		el.innerHTML = m_t.setHTMLTagAttribute("a", "target", "_new").replacePgmAttribute();
+		return el;
+	};
+}
+// -------------------------------
+// UI related functions
+function fnBuildTimeLine(bScrollToNow) {
+	var div = null, span = null;
+	var el = document.createElement("span");	
+	var sa = new Array("00", "30");
+	var lHeight = (30 * ZoomIndex[g_zoom]) + (isFireFox ? borderOffset : 0);
+	for ( var i=6; i <= 29; i ++ ) {
+		for ( var j=0; j < 2; j++ ) {
+			div = document.createElement("div");
+			div.style.height = lHeight +"px";
+			span = document.createElement("span");
+			span.innerHTML = sa[j];
+			div.innerHTML = i.toString();
+			div.appendChild(span);
+			el.appendChild(div);
+		}
+	}
+	_gel("oTimeLine").innerHTML = "";
+	_gel("oTimeLine").appendChild(el);
+	
+	if ( bScrollToNow ) {
+		fnScroll(0);
+	}
+}
+
+function fnBuildDateSelection() {
+	var root = _gel("oDate");
+	root.innerHTML = "";
+	
+	var now = fnAdjustDate(new Date());
+	var currentDay = now.getDate();
+	
+	var select = document.createElement("select");
+	select.setAttribute("name", "seldate");
+	select.setAttribute("id", "seldate");
+	if ( isFireFox ) {
+		select.setAttribute("onchange", "fnUpdate(true)");
+	} else {
+		select.onchange = function() {
+			fnUpdate(true);
+		};
+	}
+					
+	for ( var i=0; i < 7; i++ ) {		
+		now.setDate(currentDay+i);
+		var option = document.createElement("option");
+		option.setAttribute("value", now.toDateString("yyyymmdd"));
+		option.innerHTML = now.toDateString("yyyy-mm-dd") + " ("+ saWeekday[now.getDay()] +")";
+		select.appendChild(option);	
+	}
+	root.appendChild(select);
+}
+
+function pgmPack( sChName, saData, bReNew, sLogo, sOfficalUrl ) {
+	var curr, next;
+	var root = _gel(sChName);
+	if ( bReNew ) root.innerHTML = "";
+	
+/*	var div = _gel(sChName.replace("oCh", "oLogo"));
+	var a = document.createElement("a");
+	a.setAttribute("href", sOfficalUrl);
+	a.setAttribute("target", "_new");
+	a.innerHTML = sLogo;
+	div.appendChild(a); //innerHTML = sLogo; */
+		
+	for ( var i=0; i < saData.length; i ++ ) {
+		curr = str2time(saData[i].start);
+		if ( i==0 && curr > str2time("6:00") ) {
+			var pgmEmptyData = new pgmData("","06:00",curr - str2time("6:00"));
+			root.appendChild( pgmEmptyData.toDOM(ZoomIndex[g_zoom]) );
+		} else if ( i == 0 && curr < str2time("6:00") ) {
+			curr = str2time("6:00");
+		}
+		next = 0;
+		if ( i < saData.length - 1 ) {
+			next = str2time(saData[i+1].start);
+			if ( next < curr ) { 
+				next += 12 * 60;
+			}
+			saData[i].setDuration( next - curr );
+		} else {
+			next = str2time("6:00");
+			saData[i].setDuration( next - curr );
+		}
+		root.appendChild( saData[i].toDOM(ZoomIndex[g_zoom]) );
+	}
+}
+
+function fnUpdate(bScrollToNow) {
+	var oSelDate = _gel("seldate");
+	var today = oSelDate.options[oSelDate.selectedIndex].value.toDate();
+	// build left most timeline
+	fnBuildTimeLine(bScrollToNow);
+	
+	// clear previous grid data
+	for ( var i=0; i < 8; i ++ ) {
+		_gel("oLogo"+ i).innerHTML = "";
+		_gel("oCh"+ i).innerHTML = "";
+	}
+	// load corresponding channels to register channel for display
+	var sUrl = "";
+	var sa = fnGetDisplayList();
+	for ( var i=0; (i < g_chsCanShow) && ((g_lastch+i) < oChannel.preset.length); i ++ ) {
+		var idx = fnGetChannelIndexByTune(sa[g_lastch + i]);		
+		sUrl = oChannel.preset[idx].url.replace("%date%", today.toDateString(oChannel.preset[idx].dtFormat));
+		oRegisterChannel.preset[i].parser = oChannel.preset[idx].parser;
+		oRegisterChannel.preset[i].logo = oChannel.preset[idx].logo;
+		oRegisterChannel.preset[i].officalUrl = oChannel.preset[idx].officalUrl;
+
+		fnSetChannelName(i, oChannel.preset[idx].officalUrl, oChannel.preset[idx].logo);
+		if ( sUrl.indexOf(".xml") == (sUrl.length - 4) ) {
+			_IG_FetchXmlContent(sUrl, _IG_Callback( eval(oRegisterChannel.preset[i].slot) ));
+		} else {
+			_IG_FetchContent(sUrl, _IG_Callback( eval(oRegisterChannel.preset[i].slot) ));
+		}
+	}
+}
+function fnSetChannelName(n, sOfficalUrl, sLogo) {
+	var div = _gel("oLogo"+ n);
+	var a = document.createElement("a");
+	a.setAttribute("href", sOfficalUrl);
+	a.setAttribute("target", "_new");
+	a.innerHTML = sLogo;
+	div.appendChild(a);
+}
+
+function fnParseSlot1(sHtml) {
+	eval(oRegisterChannel.preset[0].parser +"(sHtml, 'oCh0', 0)");
+}
+function fnParseSlot2(sHtml) {
+	eval(oRegisterChannel.preset[1].parser +"(sHtml, 'oCh1', 1)");
+}
+function fnParseSlot3(sHtml) {
+	eval(oRegisterChannel.preset[2].parser +"(sHtml, 'oCh2', 2)");
+}
+function fnParseSlot4(sHtml) {
+	eval(oRegisterChannel.preset[3].parser +"(sHtml, 'oCh3', 3)");
+}
+function fnParseSlot5(sHtml) {
+	eval(oRegisterChannel.preset[4].parser +"(sHtml, 'oCh4', 4)");
+}
+function fnParseSlot6(sHtml) {
+	eval(oRegisterChannel.preset[5].parser +"(sHtml, 'oCh5', 5)");
+}
+function fnParseSlot7(sHtml) {
+	eval(oRegisterChannel.preset[6].parser +"(sHtml, 'oCh6', 6)");
+}
+function fnParseSlot8(sHtml) {
+	eval(oRegisterChannel.preset[7].parser +"(sHtml, 'oCh7', 7)");
+}
+// -------------------------------
+// Parsers
+// Each parser parse result file, based on its listing format, convert them to pgmData() objects.
+// After conversion completed, calling pgmPack() function to create epg grid.
+// -------------------------------
+// Listing Parser for Hong Kong NOW Broadband TV
+function fnParseNOW(oXml,sLayout,nRegistered) {
+//	all_program > program > name, program_id, adate
+	var programs = oXml.getElementsByTagName("program");
+	var data = new Array();
+	var name = null, adate = null;
+	for ( var i=0, idx=0; i < programs.length; i ++ ) {		
+		name = programs[i].getElementsByTagName("name");
+		adate = programs[i].getElementsByTagName("adate");
+		if ( str2time(getNodeValue(adate)) >= str2time("6:00") ) {
+			data[idx] = new pgmData( getNodeValue(name), getNodeValue(adate), 0 );
+			idx ++;
+		}
+	}
+	pgmPack( sLayout, data, true, 
+		oRegisterChannel.preset[nRegistered].logo, 
+		oRegisterChannel.preset[nRegistered].officalUrl );
+}
+// -------------------------------
+// Listing Parser for Hong Kong TVB
+function fnParseTVB(sHtml,sLayout,nRegistered) {
+	var spos = sHtml.indexOf("<!-- Schedule generated from database"); // -->
+	var epos = sHtml.indexOf("<!-- generated from database"); // -->
+
+	if ( spos == -1 ) return;
+	var listing = sHtml.substr(spos, epos);	
+
+	// load data as a HTML DOM
+	var doc = document.createElement("div");
+	var data = new Array();
+	doc.innerHTML = listing;	
+	var tbl = doc.getElementsByTagName("table");
+	var tr = tbl[0].getElementsByTagName("tr");
+
+	for ( var i=0; i < tr.length; i ++ ) {
+		var cols = tr[i].getElementsByTagName("td");
+		for ( var j=0; j < cols.length; cols ++ ) {
+			data[i] = new pgmData(cols[1].innerHTML, cols[0].innerHTML, 0);
+		}
+	}	
+	pgmPack(sLayout, data, true, 
+		oRegisterChannel.preset[nRegistered].logo, 
+		oRegisterChannel.preset[nRegistered].officalUrl );
+}
+// -------------------------------
+// Listing Parser for Hong Kong aTV
+function fnParseATV(sHtml,sLayout,nRegistered) {
+	var oSelDate = _gel("seldate");
+
+	var now = fnAdjustDate(oSelDate.options[oSelDate.selectedIndex].value.toDate());
+
+	var weekday = now.getDay();
+	if ( weekday == 0 ) weekday = 7;
+	var spos = sHtml.indexOf("<div id=\"day"+ weekday +"\""); // -->
+	var epos = sHtml.indexOf("</div>"); // -->
+
+	if ( spos == -1 ) return;
+	var listing = sHtml.substr(spos, epos);	
+
+	// load data as a HTML DOM
+	var doc = document.createElement("div");
+	var data = new Array();
+	doc.innerHTML = listing;	
+	var tbl = doc.getElementsByTagName("table");
+	var tr = tbl[0].getElementsByTagName("tr");
+
+	for ( var i=0, idx=0; i < tr.length; i ++ ) {
+		var cols = tr[i].getElementsByTagName("td");
+		for ( var j=0; j < cols.length; cols ++ ) {
+			if ( cols[0].getAttribute( isFireFox ? "class" : "className") == "n" ) {
+				var s = cols[0].innerHTML;
+				data[idx] = new pgmData(s.substr(5), s.substr(0,5), 0);
+				idx ++;
+			}
+		}
+	}	
+	pgmPack( sLayout, data, true, 
+		oRegisterChannel.preset[nRegistered].logo, 
+		oRegisterChannel.preset[nRegistered].officalUrl );
+}
+
+function str2time(s) {
+	var sa = s.split(":");
+	return parseInt(sa[0],10) * 60 + parseInt(sa[1],10);
+}
+
+function fnAdjustDate(oldDate) {
+	var currentDay = oldDate.getDate();
+	if ( oldDate.getHours() >= 0 && oldDate.getHours() < 6 ) {
+		oldDate.setDate(currentDay - 1);
+	}
+	return oldDate;
+}
+
+function fnTimeAdjust(oldVal) {
+	if ( oldVal >= 0 && oldVal < 6 ) return oldVal + 24;
+	return oldVal;	
+}
+// -------------------------------
+// Navigation Related functions
+function fnPushScroll() {
+	g_lastScrollTop = _gel("oScrollGrid").scrollTop;
+}
+
+function fnPopScroll() {
+	_gel("oScrollGrid").scrollTop = g_lastScrollTop;
+}
+
+function fnScroll(nDirectionIndex) {
+	if ( nDirectionIndex == 0 ) {
+		var now = new Date();
+		var currentTime = fnTimeAdjust(now.getHours());
+		var distToScroll = (currentTime-6) * 60;
+		if ( now.getMinutes() > 30 ) distToScroll += 30;
+		_gel("oScrollGrid").scrollTop = (distToScroll * ZoomIndex[g_zoom]);	
+		
+	} else {
+		var nLastTop = _gel("oScrollGrid").scrollTop;
+		_gel("oScrollGrid").scrollTop = nLastTop + 240 * nDirectionIndex;
+	}
+}
+
+function fnZoom(nZoomIndex) {
+	var lastTop = _gel("oScrollGrid").scrollTop;
+	var oneTop = lastTop / ZoomIndex[g_zoom];
+
+	g_zoom += nZoomIndex;
+	if ( g_zoom <= 0 ) g_zoom = 0;
+	if ( g_zoom >= ZoomIndex.length ) g_zoom = ZoomIndex.length -1;
+	fnUpdate(false);
+	
+	_gel("oScrollGrid").scrollTop = oneTop * ZoomIndex[g_zoom];
+}
+
+function fnMoveCh(nDirectionIndex) {
+	g_lastch += (g_chsCanShow * nDirectionIndex);
+	if ( g_lastch < 0 ) g_lastch = 0;
+	if ( g_lastch > oChannel.preset.length ) g_lastch = oChannel.preset.length - 4;
+	fnPushScroll();
+	fnUpdate(false);
+	fnPopScroll();
+}
+/*****************************************************************************
+Favorite Channels 
+*****************************************************************************/
+function fnGetDisplayList() {
+	var sa = new Array();
+	if ( g_fav != "" ) {
+		sa = g_fav.split(",")
+	} else {
+		for ( var i=0; i < oChannel.preset.length; i ++ ) {
+			sa.push(oChannel.preset[i].tune);
+		}		
+	}
+	return sa;
+}
+function fnCancelSetup(bShowSetup) {
+	_gel("oSchedule").style.display = bShowSetup ? "none" : "block";
+	_gel("oSetup").style.display = bShowSetup ? "block" : "none";
+}
+function fnLoadSetup() {
+	fnCancelSetup(true);
+	g_fav = fnGetFavoritesPref();
+	var sa = new Array();
+	if ( g_fav != "" ) {
+		sa = g_fav.split(",");
+	}
+	for ( var i=0; i < oChannel.preset.length; i ++ ) {
+		if ( !sa.exists(oChannel.preset[i].tune) ) {
+			sa.push(oChannel.preset[i].tune);
+		}
+	}
+	var el = _gel("ddlFavorite");
+	for ( var i=0; i < sa.length; i ++ ) {
+		var info = fnGetChannelInfoByTune(sa[i]);
+		if ( info != null ) {
+			var opt = new Option(info.logo, info.tune);
+			el.options[i] = opt;
+		}
+	}
+}
+function fnSaveSetup() {
+	fnCancelSetup(false);
+	var el = _gel("ddlFavorite");
+	
+	var sa = new Array();
+	for ( var i=0; i < el.options.length; i ++ ) {
+		sa.push(el.options[i].value);
+	}
+	g_fav = sa.join(",");	
+	fnSaveFavoritesPref(g_fav);
+	// reload grid
+	g_lastch = 0;
+	fnUpdate(true);
+}
+function fnItemMove(el, idx, step) {
+	el.selectedIndex = idx + step;
+	var opt = new Option(el.options[idx].text, el.options[idx].value);
+	ItemCopy(el.options[el.selectedIndex], el.options[idx]);
+	ItemCopy(opt,el.options[el.selectedIndex]);
+}
+function fnItemUp() {
+	var el = _gel("ddlFavorite");
+	var idx = el.selectedIndex;
+	if ( idx >= 1 ) {
+		fnItemMove(el, idx, -1);
+	}
+}
+function fnItemDown() {
+	var el = _gel("ddlFavorite");
+	var idx = el.selectedIndex;
+	if ( idx < el.options.length ) {
+		fnItemMove(el, idx, 1);
+	}
+}
+function ItemCopy(itemSrc,itemDest) {
+	itemDest.text = itemSrc.text;
+	itemDest.value = itemSrc.value;		
+}
+/****************************************************************************/
+function fnGetZoomPref() {
+	// Get userprefs
+	var prefs = new _IG_Prefs(__MODULE_ID__);
+	var zoom = prefs.getInt("zoom");
+	if ( isNaN(zoom) ) {
+		zoom = 1;
+	}
+	return zoom;
+}
+function fnSaveZoomPref(sNewVal) {
+	// Get userprefs
+	var prefs = new _IG_Prefs(__MODULE_ID__);
+	prefs.set("zoom", sNewVal);
+}
+function fnGetFavoritesPref() {
+	// Get userprefs
+	var prefs = new _IG_Prefs(__MODULE_ID__);
+	return prefs.getString("favorites");
+}
+function fnSaveFavoritesPref(sNewVal) {
+	// Get userprefs
+	var prefs = new _IG_Prefs(__MODULE_ID__);
+	prefs.set("favorites", sNewVal);
+}
+/*****************************************************************************
+	Main function
+*****************************************************************************/	
+function showInfo() {
+	var CONST_WIDTH_COL = 120;
+	var CONST_WIDTH_TIMELINE = 26;
+
+	// Determine number of channels can show
+	var scrWidth = document.body.clientWidth;
+	// var scrWidth = _gel("content_div").style.width; //local version
+	
+	g_chsCanShow = Math.floor((parseInt(scrWidth,10) - CONST_WIDTH_TIMELINE) / CONST_WIDTH_COL);
+	if ( g_chsCanShow >= 8 ) g_chsCanShow = 8;
+	if ( g_chsCanShow <= 0 ) g_chsCanShow = 1;
+	g_lastch = 0;
+	
+	g_zoom = fnGetZoomPref();
+	g_fav = fnGetFavoritesPref();
+	
+	// Build Program Grid
+	fnBuildDateSelection();
+	fnUpdate(true);
+	
+	_IG_AdjustIFrameHeight();
+	
+	// Register Analytics
+	_IG_Analytics("UA-760829-2", "/hkepg");
+}	 
+_IG_RegisterOnloadHandler(showInfo);
+</script>
+  ]]>
+</Content>
+</Module>
