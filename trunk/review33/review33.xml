@@ -1,0 +1,304 @@
+<?xml version="1.0" encoding="UTF-8" ?> 
+<Module>
+<ModulePrefs title="review33 二手市場" 
+	 directory_title="review33"
+     description="提供 review33 二手市場 資訊. Provide review33 (a Hong Kong hifi forum) 2nd hand market information."
+	 title_url="http://www.review33.com"
+	 screenshot="http://labajax.googlepages.com/r33shot.png"
+	 thumbnail="http://labajax.googlepages.com/r33icon.png"
+	 scrolling="false"
+     singleton="true"
+	 height="320"
+     author="floatingcat"
+	 author_photo="http://floatingcat.googlepages.com/chunmiu.png"
+	 author_email="floatingcat@gmail.com"
+	 author_aboutme="I'm a developer come from Hong Kong, China. "
+     author_affiliation="Google"
+     author_location="Hong Kong"
+     author_link="http://floatingcat.blogspot.com/"
+     category="news"
+     category2="lifestyle">
+	<Locale lang="zh-tw" country="hk"/>     
+	<Require feature="dynamic-height"/>	
+	<Require feature="analytics"/>
+	<Require feature="setprefs" /> 
+    <Require feature="settitle" />
+</ModulePrefs>
+
+<UserPref name="search" display_name="Last Search" datatype="string"/>
+<UserPref name="wish" display_name="Wish List" datatype="string"/>
+
+<Content type="html">
+<![CDATA[
+<div id="content_div">
+<style type="text/css">
+ol, ul { padding:0px; margin:0px; clear:none }
+li { padding-left:2px; margin-top:1px; width:280px; height:20px; font-size:10pt; overflow-y:hidden; overflow-x:hidden; text-overflow:ellipsis  }
+#r33_header { font-size:9pt }
+#r33_tabs { display:block; border:1px solid #666; height:285px; width:98%; overflow:hidden; overflow-y:scroll; overflow-x:hidden }
+#r33_tab_1 { width:304px; overflow:hidden; display:block }
+#r33_tab_2 { width:304px; overflow:hidden; display:none  }
+#r33_tab_3 { width:304px; overflow:hidden; display:none  }
+#r33_error_panel { display:none; position:absolute; top:100px; color:#ffcccc }
+#r33_tab_preview { display:none; height:160px; width:98%; overflow:hidden; overflow-y:scroll; overflow-x:hidden; border:1px solid #666; font-size:10pt; margin-top:4px }
+
+#r33_msg { border:1px solid #888; font-size:10pt; padding:2px; margin-bottom:4px }
+#r33_msg span { background-color:#c0c0c0; padding-left:3px; padding-right:3px }
+#r33_msg div { border:1px solid #aaa; background-color:#ffd; padding:2px }
+#r33_msg div img { width:176px; border:0px }
+</style>
+
+<span id="r33_header">
+<input id="search" name="search" size="6"><input type="button" onClick="fnUpdate();" value="go">
+<label for="cbt1"><input id="cbt1" type="radio" name="type" onClick="fnShowTab(1);" checked> 出售    </label>
+<label for="cbt2"><input id="cbt2" type="radio" name="type" onClick="fnShowTab(2);"> 徵求    </label>
+<label for="cbt3"><input id="cbt3" type="radio" name="type" onClick="fnShowTab(3);"> 廣告    </label>
+</span>
+<div id="r33_tabs">
+	<div id="r33_tab_1"></div>
+	<div id="r33_tab_2"></div>
+	<div id="r33_tab_3"></div>
+</div>
+<div id="r33_tab_preview">Preview Area</div>
+<div id="r33_error_panel">error</div>
+</div>
+<script type="text/javascript">
+<!--
+// Global variables
+var sRootUrl = "http://www.review33.com/2ndhand/";
+var sFeedUrl = "http://www.review33.com/2ndhand/topic.htm";
+var sSearchUrl = "http://www.review33.com/2ndhand/forum_topic.php?search=";
+var sDetailUrl = "http://www.review33.com/2ndhand/forum_message.php?sortby=4&topic=";
+var sLoadingUrl = "http://labajax.googlepages.com/loading.gif";
+var sWhiteColor = "#FFFFFF, #EEFFEE";
+var saWord = ["出售:","徵求:"];
+/*************************************************
+	Extend String Object functions
+*************************************************/	
+String.prototype.LZero = function(max) {
+	var sOut = this;
+	for ( var i = 0; i < max - this.length; i ++ ) {
+		sOut = "0"+ sOut;
+	}
+	return sOut;
+}
+String.prototype.trim = function() {
+	var m = this.match(/^\s*(\S+(\s+\S+)*)\s*$/);
+	return (m == null) ? "" : m[1];	
+}
+function fnWriteError(sErr) {
+    var el = _gel("r33_error_panel");
+    el.style.display = "block";
+    el.innerHTML = "Error: "+ sErr;
+}
+//************************************************
+function fnShowTab(id) {
+	_gel("r33_tab_1").style.display = (id==1?"block":"none");
+	_gel("r33_tab_2").style.display = (id==2?"block":"none");
+	_gel("r33_tab_3").style.display = (id==3?"block":"none");
+	_gel("r33_tabs").style.height = "285";
+	_gel("r33_tab_preview").style.display = "none";
+}
+
+function fnUpdate() {
+	_gel("cbt1").click();
+	_gel("r33_tab_1").innerHTML = "<center><img src=\""+ sLoadingUrl +"\" border=\"0\"><br>等等...</center>";
+	
+	var sSearch = _gel("search").value;
+	fnSetSearchPref(sSearch);
+	
+	if ( sSearch != "" ) {
+		_IG_FetchContent(sSearchUrl + escape(sSearch), _IG_Callback(fetchItemList));
+	} else {
+		_IG_FetchContent(sFeedUrl, _IG_Callback(fetchItemList));
+	}
+}
+
+function fnGetSearchPref() {
+	// Get userprefs
+	var prefs = new _IG_Prefs(__MODULE_ID__);
+	_gel("search").value = prefs.getString("search");
+}
+function fnGetWishListPref() {
+	// Get userprefs
+	var prefs = new _IG_Prefs(__MODULE_ID__);
+	return prefs.getString("wish");
+}
+function fnSetSearchPref(sNewVal) {
+	// Get userprefs
+	var prefs = new _IG_Prefs(__MODULE_ID__);
+	prefs.set("search", sNewVal);
+}
+
+function fnPreview(r33ItemId) {
+	_gel("r33_tabs").style.height = "108px";
+    var el = _gel("r33_tab_preview");
+    el.style.display = "block";
+    el.style.height = "160px";
+	el.innerHTML = "<center><img src=\""+ sLoadingUrl +"\" border=\"0\"><br>等等...</center>";
+	var sUrl = sDetailUrl + escape(r33ItemId);
+	_IG_FetchContent(sUrl, _IG_Callback(fetchPreview));
+}
+
+function openWin(sWinName, sFile) {
+	window.open(sRootUrl + sFile, sWinName);
+}
+
+function fetchItemList(responseText) {
+	try {
+		var doc = document.createElement("div");
+		doc.innerHTML = responseText;
+
+		_gel("r33_tab_1").innerHTML = "";
+		_gel("r33_tab_2").innerHTML = "";
+		_gel("r33_tab_3").innerHTML = "";
+		
+		var tbl = doc.getElementsByTagName("table");
+		
+		if (tbl == null || tbl.length < 8) {
+			return;
+		}
+		var ul_1 = document.createElement("ul"); // sell
+		var ul_2 = document.createElement("ul"); // wanted
+		var ul_3 = document.createElement("ul"); // adv
+		var sWishList = fnGetWishListPref().replace(' ', '|');
+		var tr = tbl[5].getElementsByTagName("tr");
+		for ( var i=0; i < tr.length; i++ ) {
+			var td = tr[i].getElementsByTagName("td");
+			var sColor = tr[i].getAttribute("bgcolor").toUpperCase();
+			var sa = td[0].innerHTML.match(/javascript:topic\(([0-9.]*)\)\">([\s\S.]*)<\/a>/im);
+			
+			if ( sa != null ) {
+				var sId, sName, nType=2; // 0:1:2, sell, buy, ad
+				if ( sa.length >= 1 ) sId = sa[1];
+				if ( sa.length >= 2 ) sName = sa[2];
+				var li = document.createElement("li");
+
+                var idx = "rb"+ i.toString();
+                var label = document.createElement("label");
+                label.setAttribute("for", idx);                
+
+                var input = document.createElement("input");
+                input.setAttribute("id", idx);
+                input.setAttribute("type", "radio");
+                input.setAttribute("name", "rb");
+                input.setAttribute("value", sId);
+                if ( typeof input.onclick != "undefined" ) {
+                    input.onclick = function() { fnPreview(this.value) };
+                } else {
+                    input.setAttribute("onclick", "fnPreview(this.value)");
+                }
+
+                var span = document.createElement("span");
+
+                // mark favorite in wish list
+                if ( sWishList.length > 0 ) {
+                    var regex = new RegExp(sWishList, "im");
+                    if ( sName.match(regex) != null ) {
+                        if ( typeof input.onclick != "undefined" ) {
+                            span.style.color = "#ff3333";
+                        } else {
+                            span.setAttribute("style", "color:#ff3333");
+                        }
+                    }
+                }
+
+				if ( sWhiteColor.indexOf(sColor) >= 0 ) {
+					if ( sName.indexOf(saWord[1]) >= 0 ) {
+                        nType = 1;
+                        span.innerHTML = sName.replace(saWord[1], "");
+
+					} else {
+                        nType = 0;
+                        span.innerHTML = sName.replace(saWord[0], "");
+					}
+				} else {
+                    nType = 2;
+					span.innerHTML = sName;
+				}
+
+                label.appendChild(input);
+                label.appendChild(span);
+                li.appendChild(label);
+                switch( nType ) {
+                    case 0: ul_1.appendChild(li); break;
+                    case 1: ul_2.appendChild(li); break;
+                    case 2: ul_3.appendChild(li); break;
+                }
+			}
+		}
+		_gel("r33_tab_1").appendChild(ul_1);
+		_gel("r33_tab_2").appendChild(ul_2);
+		_gel("r33_tab_3").appendChild(ul_3);
+	} catch(e) {
+		fnWriteError("fetchItemList="+ e);
+		return false;
+	} 
+	return true;
+}
+
+function fetchPreview(responseText) {	
+	try {		
+		var doc = document.createElement("div");
+		doc.innerHTML = responseText;
+		
+		var tbl = doc.getElementsByTagName("table");
+		var sHtml = "Cannot preview";
+		if ( tbl != null ) {
+			sHtml = "";
+			for ( var i=1; i < tbl.length -2; i ++ ) {
+				var td = tbl[i].getElementsByTagName("td");
+				if ( td != null && td.length == 3 ) {
+                    var sItem = "";
+					var sName = td[1].innerHTML;
+					var epos = sName.toLowerCase().indexOf("<br>");
+					if (epos > 0) sName = sName.substr(0,epos);
+					sContent = td[0].innerHTML;
+					sDateTime = td[2].innerHTML;
+
+                    // find first <br/> to remove first anchor tag
+                    var pos = sContent.indexOf("<br>");
+                    if ( pos > 0 ) {
+                        sContent = sContent.substring(pos + 4);
+                    }
+
+                    sItem = "<div id=\"r33_msg\"><span>"+ sName +"    </span>&nbsp;"+ sDateTime +"<br/>"
+                        + "<div>"+ sContent.replace("<br/><br/>", "<br/>") +"    </div></div>";
+
+					sHtml += sItem;
+				}
+			}
+		}	
+		_gel("r33_tab_preview").innerHTML = sHtml;
+	}
+	catch(e) {
+		fnWriteError("fetchPreview="+ e);
+		return false;	
+	}
+}
+/*************************************************
+	Main function
+*************************************************/	
+function showInfo() {
+	// Get user search pref
+	fnGetSearchPref();
+	
+	// Get list from review33.com
+	fnUpdate();
+
+    var sWishList = fnGetWishListPref();
+    if ( sWishList.length > 0 ) {
+        _IG_SetTitle("review33 二手市場 &#9733;");
+    } else {
+        _IG_SetTitle("review33 二手市場 &#9734;");
+    }
+
+	// Register Analytics
+	_IG_Analytics("UA-760829-2", "/review33");	
+}	 
+_IG_RegisterOnloadHandler(showInfo);
+// -->
+</script>
+  ]]>
+</Content>
+</Module>
