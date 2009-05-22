@@ -4,8 +4,8 @@
 	directory_title="Weather"
 	description="提供最新香港天氣報告, 紫外線指數, 現時生效警告, 七日天氣預告, 及是日農曆資訊. Provide Most Updated Hong Kong Local Weather Info, UV-Index, Warning In Force, 7 days forecast, and Lunar calendar info."
 	title_url="http://www.weather.gov.hk"
-	screenshot="http://labajax.googlepages.com/hkwscreen.png"
-	thumbnail="http://labajax.googlepages.com/hkwicon.png"
+	screenshot="http://hk-widget.googlecode.com/svn/trunk/hkweather/hkwscreen.png"
+	thumbnail="http://hk-widget.googlecode.com/svn/trunk/hkweather/hkwicon.png"
 	width="300"
 	scrolling="false"
 	singleton="false"
@@ -44,28 +44,34 @@
 		margin : 0px;
 	} 
 	.newyear {
-		background-image : url(http://www.gmodules.com/ig/proxy?url=http://labajax.googlepages.com/hkw_newyear.png);
+		background-image : url(http://hk-widget.googlecode.com/svn/trunk/hkweather/hkw_newyear.png);
 		background-repeat : no-repeat;
 	}
 	.spring { 
-		background-image : url(http://www.gmodules.com/ig/proxy?url=http://labajax.googlepages.com/hkw_spring.png);
+		background-image : url(http://hk-widget.googlecode.com/svn/trunk/hkweather/hkw_spring.png);
 		background-repeat : no-repeat;
 	} 
 	.summer { 
-		background-image : url(http://www.gmodules.com/ig/proxy?url=http://labajax.googlepages.com/hkw_summer.png);
+		background-image : url(http://hk-widget.googlecode.com/svn/trunk/hkweather/hkw_summer.png);
 		background-repeat : no-repeat;
 	} 
 	.autumn { 
-		background-image : url(http://www.gmodules.com/ig/proxy?url=http://labajax.googlepages.com/hkw_autumn.png);
+		background-image : url(http://hk-widget.googlecode.com/svn/trunk/hkweather/hkw_autumn.png);
 		background-repeat : no-repeat;
 	} 
 	.winter { 
-		background-image : url(http://www.gmodules.com/ig/proxy?url=http://labajax.googlepages.com/hkw_winter.png);
+		background-image : url(http://hk-widget.googlecode.com/svn/trunk/hkweather/hkw_winter.png);
 		background-repeat : no-repeat;
 	}	
 	td.title { 
-		padding-bottom : 0;
+		padding-bottom : 0;		
+	}
+	td.title div {
 		text-align:center;
+		overflow: hidden;
+		display: inline-block; 
+		width: 99%;
+		height: 14px;
 	}
 	.alpha {
 		opacity : 0.50;
@@ -109,14 +115,15 @@
 		text-align : center;
 		overflow : hidden;
 		width : 100%;
-		height : 28px;
+		height : 36px;
 	}
 	#ph_warning_ico { 
+		overflow: hidden;
+		display: inline-block; 
 		text-align : center;
-		overflow : hidden;
-		background-color : #ffb;
-		width : 100%;
-		height : 36px;
+		height: 32px;
+		margin: 1px;
+		background-color: #ffb;
 	}	
 	#ph_warning_ico img { 
 		width : 32px; 
@@ -126,18 +133,21 @@
 	
 	#ph_forecast { 
 		border : 2px solid #08f;
-		text-align : center;
-		overflow : hidden;
 		background-color : #ccf;
 		width : 100%;
-		height : 36px;
 	}	
-	#ph_forecast img { 
+	#ph_forecast_ico {
+		overflow : hidden;
+		display : inline-block; 
+		text-align : center;
+		height : 32px;
+		margin : 1px;		
+	}
+	#ph_forecast_ico img { 
 		width : 32px; 
 		height : 32px;
 		padding : 1px;
 	}
-	
 	#ph_uvindex { 
 		padding:1px;
 		font-size : 12pt;
@@ -152,34 +162,25 @@
 	}
 	</style>
 	<table id="main" border="0" padding="0" spacing="0">
+		<tr><td id="ph_lunar" colspan="4"></td></tr>
 		<tr>
-			<td id="ph_lunar" colspan="4"></td>
-		</tr>
-		<tr>
-			<td class="title" id="lblWeather">&nbsp;</td>
-			<td class="title" id="lblUvidx">&nbsp;</td>
-			<td class="title" id="lblTemp">&nbsp;</td>
-			<td class="title" id="lblHum">&nbsp;</td>
-		</tr>
-		<tr>
+			<td class="title"><div id="lblWeather">&nbsp;</div></td>
+			<td class="title"><div id="lblUvidx">&nbsp;</div></td>
+			<td class="title"><div id="lblTemp">&nbsp;</div></td>
+			<td class="title"><div id="lblHum">&nbsp;</div></td>
+		</tr><tr>
 			<td class="frame" id="ph_weather">???</td>
 			<td class="frame" id="ph_uvindex">???</td>
 			<td class="frame" id="ph_temperature">???</td>
 			<td class="frame" id="ph_humidity">???</td>
-		</tr>
-		<tr>
-			<td id="ph_warning" colspan="4">
-				<div id="ph_warning_ico">&nbsp;</div>
-			</td>
-		</tr>
-		<tr>
+		</tr><tr>
+			<td id="ph_warning" colspan="4"><div id="ph_warning_ico">&nbsp;</div></td>
+		</tr><tr>
 			<td id="lblWarning" colspan="2">&nbsp;</td>
 			<td id="lbl7days" class="lower" colspan="2">&nbsp;</td>
-		</tr>		
-		<tr>
-			<td id="ph_forecast" colspan="4">&nbsp;</td>
-		</tr>
-		<tr>
+		</tr><tr>
+			<td  id="ph_forecast" colspan="4"><div id="ph_forecast_ico">&nbsp;</div></td>
+		</tr><tr>
 			<td class="provider" colspan="4">
 				<span id="lblProvider">&nbsp;</span> (<span id="ph_lastupdate">&nbsp;</span>) 
 			</td>
@@ -219,13 +220,18 @@ var gLang = 0;
 
 function setLocale() {
 	_IG_SetTitle(saTitle[gLang]);
-	_gel("lblWeather").innerHTML = saWord[0][gLang];
-	_gel("lblUvidx").innerHTML = saWord[1][gLang];
-	_gel("lblTemp").innerHTML = saWord[2][gLang];
-	_gel("lblHum").innerHTML = saWord[3][gLang];
-	_gel("lblWarning").innerHTML = saWord[4][gLang];
-	_gel("lbl7days").innerHTML = saWord[5][gLang];
-	_gel("lblProvider").innerHTML = saWord[6][gLang];
+	setItemText(_gel("lblWeather"), saWord[0][gLang]);
+	setItemText(_gel("lblUvidx"), saWord[1][gLang]);
+	setItemText(_gel("lblTemp"), saWord[2][gLang]);
+	setItemText(_gel("lblHum"), saWord[3][gLang]);
+	setItemText(_gel("lblWarning"), saWord[4][gLang]);
+	setItemText(_gel("lbl7days"), saWord[5][gLang]);
+	setItemText(_gel("lblProvider"), saWord[6][gLang]);
+}
+
+function setItemText(el,s) {
+	el.innerHTML = s;
+	el.setAttribute("title", s);
 }
 //====================================== Weather Enums
 var saTitle = [
@@ -420,7 +426,7 @@ function fetchForecast(responseText) {
 					+ " title=\""+ sDay[i].replace("Date/Month ","") +"  "+ getCartoonText( cartoonCode ) +"\">";
 			}
 		}
-		_gel('ph_forecast').innerHTML = html;
+		_gel('ph_forecast_ico').innerHTML = html;
 	} catch(e) {
 		// alert("fetchForecast="+ e);
 		return false;
@@ -764,7 +770,7 @@ function calculateLunar(thisDay) {
 		if ( oLunar[md].lunarFestival.length > 0 ) sLunar += "【"+ oLunar[md].lunarFestival +"】";
 		
 	} else {
-		sLunar = " 農曆 "+ sYearName + Animals[(lYear-4)%12][gLang] +"年"+ sMonth + sDay +"日 ";
+		sLunar = " 農曆 "+ sYearName + Animals[(lYear-4)%12][gLang] +"年"+ sMonth +"月"+ sDay +"日 ";
 		if ( oLunar[md].solarTerms.length > 0 ) sLunar += "【節氣:"+ oLunar[md].solarTerms +"】";
 		if ( oLunar[md].lunarFestival.length > 0 ) sLunar += "【"+ oLunar[md].lunarFestival +"】";
 	}
