@@ -4,8 +4,8 @@
 	 directory_title="review33"
      description="提供 review33 二手市場 資訊. Provide review33 (a Hong Kong hifi forum) 2nd hand market information."
 	 title_url="http://www.review33.com"
-	 screenshot="http://labajax.googlepages.com/r33shot.png"
-	 thumbnail="http://labajax.googlepages.com/r33icon.png"
+	 screenshot="http://hk-widget.googlecode.com/svn/trunk/review33/r33shot.png"
+	 thumbnail="http://hk-widget.googlecode.com/svn/trunk/review33/r33icon.png"
 	 scrolling="false"
      singleton="true"
 	 height="320"
@@ -30,6 +30,7 @@
 
 <Content type="html">
 <![CDATA[
+<!-- ALm6fM0PM-j_JXf2jvlh-Kd7LQf8LpeB-T22Ed-B-51m_Qc50vi_DikC904ompJ_G4JJMXBol9FnnOcfZGAuGV1Hhr5dNGpu-ZbArRe2eNvO2-UI1pfit95V0kLSzcPPC4KI7qCGt1-Y -->
 <div id="content_div">
 <style type="text/css">
 ol, ul { padding:0px; margin:0px; clear:none }
