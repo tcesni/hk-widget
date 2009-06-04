@@ -4,8 +4,8 @@
 	 directory_title="六合彩結果"
      description="提供最新一期六合彩結果. Latest Hong Kong Mark Six Lottery Draw Result."
 	 title_url="http://bet.hkjc.com/marksix/index.aspx?lang=ch"
-	 screenshot="http://floatingcat.googlepages.com/marksix.png"
-	 thumbnail="http://floatingcat.googlepages.com/marksixico.png"
+	 screenshot="http://hk-widget.googlecode.com/svn/trunk/marksix/marksix.png"
+	 thumbnail="http://hk-widget.googlecode.com/svn/trunk/marksix/marksixico.png"
      scrolling="false"
      singleton="false"
      author="floatingcat"
@@ -25,6 +25,7 @@
 </ModulePrefs>
 <Content type="html">
 <![CDATA[  
+<!-- ALm6fM1QF3bZqnIeNbP-o7grSudkNvTk82SR6gOaHrUjoX4kuqFXpZ3eZ411zOKhnQkkTzPX3FkVoYGiAQge5wHqDkVfS6-VcjIMKrX-loJ2y6EHLTEJugp7Z4q5HTJ7RC0s-xhRihau -->
 <div id="content_div"></div>
 <script type="text/javascript">
 /*****************************************************************************
