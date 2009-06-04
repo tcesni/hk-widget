@@ -4,8 +4,8 @@
 	directory_title="EPG"
 	description="提供七日香港電視節目表. Provide Most Updated 7 days EPG Info in Hong Kong."
 	title_url="http://floatingcat.googlepages.com"
-	screenshot="http://labajax.googlepages.com/hkepgscr.png"
-	thumbnail="http://labajax.googlepages.com/hkepgico.png"
+	screenshot="http://hk-widget.googlecode.com/svn/trunk/hkepg/hkepgscr.png"
+	thumbnail="http://hk-widget.googlecode.com/svn/trunk/hkepg/hkepgico.png"
 	width="300"
 	height="320"
 	scrolling="false"
@@ -39,6 +39,7 @@
 
 <Content type="html">
 <![CDATA[
+<!-- ALm6fM03Itu7K_udvOJPZrRej4LQXSAW2Yppz_MyXNsILOGQr9hFcXenptY3bBqtYRtOS06GOBBI4pqTyzyNyqX6ppa8yAdqTff5nwoxl9qgDZLoK1lEK40LAXw9fE4Mrzsf0AllUexp -->
 <div id="content_div">
 <style type="text/css">
 #oSetup { display:none }
@@ -59,11 +60,11 @@ div.pgm a { color:#000 }
 #oDate { width:120px; vertical-align:top; padding:1px; }
 </style>
 
-<img src="http://www.gmodules.com/ig/proxy?url=http://labajax.googlepages.com/hkepg_date.png" alt=" 選擇日期 " title=" 選擇日期 " onClick="fnShowDate();" />
+<img src="http://hk-widget.googlecode.com/svn/trunk/hkepg/date.png" alt=" 選擇日期 " title=" 選擇日期 " onClick="fnShowDate();" />
 <span id="oDate"></span>&nbsp;
-<img src="http://www.gmodules.com/ig/proxy?url=http://labajax.googlepages.com/hkepg_zoomin.png" alt="[ 時間軸放大 ]" title="[ 時間軸放大 ]" onClick="fnZoom(1);" />
-<img src="http://www.gmodules.com/ig/proxy?url=http://labajax.googlepages.com/hkepg_zoomout.png" alt="[ 時間軸縮小 ]" title="[ 時間軸縮小 ]" onClick="fnZoom(-1);" />
-<img src="http://www.gmodules.com/ig/proxy?url=http://floatingcat.googlepages.com/ico01.png" alt="[ 最愛頻道 ]" title="[ 最愛頻道 ]" onClick="fnLoadSetup();" />
+<img src="http://hk-widget.googlecode.com/svn/trunk/hkepg/zoomin.png" alt="[ 時間軸放大 ]" title="[ 時間軸放大 ]" onClick="fnZoom(1);" />
+<img src="http://hk-widget.googlecode.com/svn/trunk/hkepg/zoomout.png" alt="[ 時間軸縮小 ]" title="[ 時間軸縮小 ]" onClick="fnZoom(-1);" />
+<img src="http://hk-widget.googlecode.com/svn/trunk/hkepg/fav.png" alt="[ 最愛頻道 ]" title="[ 最愛頻道 ]" onClick="fnLoadSetup();" />
 
 <div id="oSetup">
 <table style="width:100%"><tr><td> 頻道排列 <br/>
@@ -104,13 +105,13 @@ div.pgm a { color:#000 }
 </div>
 
 <div id="oToolbar">
-<img src="http://www.gmodules.com/ig/proxy?url=http://labajax.googlepages.com/hkepg_prev.png" alt="[ 上一個頻道 ]" title="[ 上一個頻道 ]" onClick="fnMoveCh(-1);" />
+<img src="http://hk-widget.googlecode.com/svn/trunk/hkepg/prev.png" alt="[ 上一個頻道 ]" title="[ 上一個頻道 ]" onClick="fnMoveCh(-1);" />
 &nbsp;
-<img src="http://www.gmodules.com/ig/proxy?url=http://labajax.googlepages.com/hkepg_up.png" alt="[時間軸向上]" title="[時間軸向上]" onClick="fnScroll(-1);" />
-<img src="http://www.gmodules.com/ig/proxy?url=http://labajax.googlepages.com/hkepg_clock.png" alt="[現正播放]" title="[現正播放]" onClick="fnScroll(0);" />
-<img src="http://www.gmodules.com/ig/proxy?url=http://labajax.googlepages.com/hkepg_down.png" alt="[時間軸向下]" title="[時間軸向下]" onClick="fnScroll(1);" />
+<img src="http://hk-widget.googlecode.com/svn/trunk/hkepg/up.png" alt="[時間軸向上]" title="[時間軸向上]" onClick="fnScroll(-1);" />
+<img src="http://hk-widget.googlecode.com/svn/trunk/hkepg/clock.png" alt="[現正播放]" title="[現正播放]" onClick="fnScroll(0);" />
+<img src="http://hk-widget.googlecode.com/svn/trunk/hkepg/down.png" alt="[時間軸向下]" title="[時間軸向下]" onClick="fnScroll(1);" />
 &nbsp;
-<img src="http://www.gmodules.com/ig/proxy?url=http://labajax.googlepages.com/hkepg_next.png" alt="[ 下一個頻道 ]" title="[ 下一個頻道 ]" onClick="fnMoveCh(1);" />
+<img src="http://hk-widget.googlecode.com/svn/trunk/hkepg/next.png" alt="[ 下一個頻道 ]" title="[ 下一個頻道 ]" onClick="fnMoveCh(1);" />
 </div>
 </div>
 
