@@ -44,13 +44,15 @@ li { padding-left:2px; margin-top:1px; width:280px; height:20px; font-size:10pt;
 #r33_msg span { background-color:#c0c0c0; padding-left:3px; padding-right:3px }
 #r33_msg div { border:1px solid #aaa; background-color:#ffd; padding:2px }
 #r33_msg div img { width:176px; border:0px }
+#sell { color:#ff3333; font-size:12pt }
+#buy { color:#ff3333; font-size:12pt }
 </style>
 
 <span id="r33_header">
 <label for="cbt3"><input id="cbt3" type="checkbox" name="cbFav" title="只列出最愛"></label>
-<input id="search" name="search" size="15"><input type="button" onClick="fnUpdate();" value="go" title="我想搵">
-<label for="cbt1"><input id="cbt1" type="radio" name="type" onClick="fnShowTab(1);" checked> 出售    </label>
-<label for="cbt2"><input id="cbt2" type="radio" name="type" onClick="fnShowTab(2);"> 徵求    </label>
+<input id="search" name="search" size="12"><input type="button" onClick="fnUpdate();" value="go" title="我想搵">
+<label for="cbt1"><input id="cbt1" type="radio" name="type" onClick="fnShowTab(1);" checked> 出售 <span id="sell"></span> </label>
+<label for="cbt2"><input id="cbt2" type="radio" name="type" onClick="fnShowTab(2);"> 徵求 <span id="buy"></span> </label>
 </span>
 <div id="r33_tabs">
 	<div id="r33_tab_1"></div>
@@ -150,6 +152,8 @@ function fetchXMLItemList(responseXML) {
 		var sWishList = fnGetSearchPref().replace(' ', '|');
 		var itemList = domdata.getElementsByTagName("item");
 		var bShowFavOnly = _gel('cbt3').checked;
+		var sell = 0;
+		var buy = 0;
 		
 		for ( var i=0; i < itemList.length; i++ ) {
 			var nodeList = itemList.item(i).childNodes;
@@ -172,6 +176,14 @@ function fetchXMLItemList(responseXML) {
 			}
 			
 			var bIsFavorite = isItemInWishList(sTitle, sWishList);
+			if ( bIsFavorite ) {
+				if ( nType == 1 ) {
+					buy ++;
+				} else {
+					sell ++;
+				}
+			}
+			
 			if ( bShowFavOnly == false || bIsFavorite ) {
 				var li = buildItem(i, sTitle, sLink, nType, bIsFavorite);			
             	switch( nType ) {
@@ -182,7 +194,15 @@ function fetchXMLItemList(responseXML) {
 		}
 		_gel("r33_tab_1").appendChild(ul_1);
 		_gel("r33_tab_2").appendChild(ul_2);
-
+		
+		_gel("sell").innerHTML = "";
+		_gel("buy").innerHTML = "";
+		if ( sell > 0 ) {
+			_gel("sell").innerHTML = "&#" + ( 9311 + ( sell > 20 ? 20 : sell ) ) +";";
+		}
+		if ( buy > 0 ) {
+			_gel("buy").innerHTML = "&#" + ( 9311 + ( buy > 20 ? 20 : buy ) ) +";";
+		}
 	} catch(e) {
 		fnWriteError("fetchItemList="+ e);
 		return false;
