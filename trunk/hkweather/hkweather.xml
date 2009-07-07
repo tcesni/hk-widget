@@ -46,22 +46,27 @@
 	} 
 	.newyear {
 		background-image : url(http://hk-widget.googlecode.com/svn/trunk/hkweather/hkw_newyear.png);
+		background-position : right center;
 		background-repeat : no-repeat;
 	}
 	.spring { 
 		background-image : url(http://hk-widget.googlecode.com/svn/trunk/hkweather/hkw_spring.png);
+		background-position : right center;
 		background-repeat : no-repeat;
 	} 
 	.summer { 
 		background-image : url(http://hk-widget.googlecode.com/svn/trunk/hkweather/hkw_summer.png);
+		background-position : right center;
 		background-repeat : no-repeat;
 	} 
 	.autumn { 
 		background-image : url(http://hk-widget.googlecode.com/svn/trunk/hkweather/hkw_autumn.png);
+		background-position : right center;
 		background-repeat : no-repeat;
 	} 
 	.winter { 
 		background-image : url(http://hk-widget.googlecode.com/svn/trunk/hkweather/hkw_winter.png);
+		background-position : right center;
 		background-repeat : no-repeat;
 	}	
 	td.title { 
@@ -135,6 +140,7 @@
 	#ph_forecast { 
 		border : 2px solid #08f;
 		background-color : #ccf;
+		text-align : center;
 		width : 100%;
 	}	
 	#ph_forecast_ico {
@@ -175,12 +181,12 @@
 			<td class="frame" id="ph_temperature">???</td>
 			<td class="frame" id="ph_humidity">???</td>
 		</tr><tr>
-			<td id="ph_warning" colspan="4"><div id="ph_warning_ico">&nbsp;</div></td>
+			<td id="ph_warning" colspan="4"><div id="ph_warning_ico"></div></td>
 		</tr><tr>
 			<td id="lblWarning" colspan="2">&nbsp;</td>
 			<td id="lbl7days" class="lower" colspan="2">&nbsp;</td>
 		</tr><tr>
-			<td  id="ph_forecast" colspan="4"><div id="ph_forecast_ico">&nbsp;</div></td>
+			<td id="ph_forecast" colspan="4"><div id="ph_forecast_ico">&nbsp;</div></td>
 		</tr><tr>
 			<td class="provider" colspan="4">
 				<span id="lblProvider">&nbsp;</span> (<span id="ph_lastupdate">&nbsp;</span>) 
@@ -390,7 +396,7 @@ function fetchWarning(responseText) {
 		var sMatch = warningPage.match(re);
 
 		if ( sMatch == null ) {
-			html += "&nbsp;";
+			html = "";
 			_gel('ph_warning_ico').setAttribute(isFireFox ? "class" : "className", "alpha");
 			_gel('lblWarning').setAttribute(isFireFox ? "class" : "className", "alpha");
 		} else if ( sMatch.length >= 2 ) { 				
