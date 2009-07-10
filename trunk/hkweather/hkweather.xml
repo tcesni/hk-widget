@@ -6,7 +6,6 @@
 	title_url="http://www.weather.gov.hk"
 	screenshot="http://hk-widget.googlecode.com/svn/trunk/hkweather/hkwscreen.png"
 	thumbnail="http://hk-widget.googlecode.com/svn/trunk/hkweather/hkwicon.png"
-	width="300"
 	scrolling="false"
 	singleton="false"
 	author="floatingcat"
@@ -39,7 +38,7 @@
 	#main { 
 		font-size : 9pt;
 		width : 100%;
-		height : 240px;
+		height : 100%;
 		table-layout : fixed;
 		padding : 0px;
 		margin : 0px;
@@ -48,26 +47,31 @@
 		background-image : url(http://hk-widget.googlecode.com/svn/trunk/hkweather/hkw_newyear.png);
 		background-position : right center;
 		background-repeat : no-repeat;
+		background-attachment:fixed;
 	}
 	.spring { 
 		background-image : url(http://hk-widget.googlecode.com/svn/trunk/hkweather/hkw_spring.png);
 		background-position : right center;
 		background-repeat : no-repeat;
+		background-attachment:fixed;
 	} 
 	.summer { 
 		background-image : url(http://hk-widget.googlecode.com/svn/trunk/hkweather/hkw_summer.png);
 		background-position : right center;
 		background-repeat : no-repeat;
+		background-attachment:fixed;
 	} 
 	.autumn { 
 		background-image : url(http://hk-widget.googlecode.com/svn/trunk/hkweather/hkw_autumn.png);
 		background-position : right center;
 		background-repeat : no-repeat;
+		background-attachment:fixed;
 	} 
 	.winter { 
 		background-image : url(http://hk-widget.googlecode.com/svn/trunk/hkweather/hkw_winter.png);
 		background-position : right center;
 		background-repeat : no-repeat;
+		background-attachment:fixed;
 	}	
 	td.title { 
 		padding-bottom : 0;		
@@ -101,7 +105,8 @@
 		font-size : 6pt;
 	} 
 	#ph_weather img {
-		width : 90%;
+		weight : 90%;
+		height : 90%;
 	}	
 	#ph_lunar {
 		font-size : 10pt;
