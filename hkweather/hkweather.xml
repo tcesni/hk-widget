@@ -16,7 +16,8 @@
 	author_location="Hong Kong"
 	author_link="http://floatingcat.blogspot.com/"
     category="news"
-    category2="lifestyle">
+    category2="lifestyle"
+	height="230">
 	<Require feature="analytics"/>	
 	<Require feature="setprefs" /> 
 	<Require feature="settitle" /> 
