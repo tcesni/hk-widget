@@ -226,9 +226,9 @@ var sWarningUrl = "http://www.weather.gov.hk/textonly/warning/warn.htm";
 var sForecastUrl = "http://www.weather.gov.hk/textonly/forecast/nday.htm";
 
 //====================================== Weather cartoon url prefix
-var sCartoonPrefix = "http://www.hko.gov.hk/images/wxicon/";
+var sCartoonPrefix = "http://www.weather.gov.hk/images/wxicon/";
 var sWarningPrefix = "http://www.weather.gov.hk/textonly/img/warn/";
-var sForecastPrefix = "http://www.hko.gov.hk/images/wxicon/small/pic50.png";
+var sForecastPrefix = "http://www.weather.gov.hk/images/wxicon/small/pic50.png";
 var gLang = 0;
 
 function setLocale() {
@@ -345,36 +345,37 @@ function fetchCurrent(responseText) {
 		var sCurrent = responseText;
 		
 		var sa;
-		sa = sCurrent.match(/<I>BULLETIN UPDATED AT ([\s\S.]*)<\/I>/im);
+		sa = sCurrent.match(/<i>bulletin updated at ([\s\S.]*)<\/i>/im);
 		if ( sa != null && sa.length == 2 )	sLastUpdate = sa[1];
-				 
-		sa = sCurrent.match(/AIR TEMPERATURE : ([\d.]*) DEGREES CELSIUS/im);
+
+		sa = sCurrent.match(/air temperature : ([\d.]*) degrees celsius/im);
 		if ( sa != null && sa.length == 2 ) currentTemperature = parseInt(sa[1], 10);
 
-		sa = sCurrent.match(/RELATIVE HUMIDITY : ([\d.]*) PER CENT/im);
+		sa = sCurrent.match(/relative humidity : ([\d.]*) per cent/im);
 		if ( sa != null && sa.length == 2 )	currentHumidity = parseInt(sa[1], 10);
 
-		sa = sCurrent.match(/WEATHER CARTOON : NO.([\d.]*) - ([\w^n]*)/im);
-		if ( sa != null && sa.length >= 2 ) {
-			currentCartoon = parseInt(sa[1], 10);
-			// if ( sa.length >= 3 ) currentCartoonText = sa[2];
+		sa = sCurrent.match(/weather cartoon : No.(\s|)([\d.]*) - ([\w^n]*)/im);
+		if ( sa != null && sa.length >= 3 ) {
+			currentCartoon = parseInt(sa[2], 10);
 		}
-				 
-		// DURING THE PAST HOUR THE MEAN UV INDEX RECORDED AT KING'S PARK : 0.0
-		sa = sCurrent.match(/THE MEAN UV INDEX RECORDED AT KING'S PARK : ([\d.]*).\nINTENSITY OF UV RADIATION : ([\w^n]*)/im);
+
+		sa = sCurrent.match(/the mean uv index recorded at king's park : ([\d.]*)/im);
 		if ( sa != null && sa.length >= 2 )	{
 			currentUVIndex = parseInt(sa[1], 10);
-			if ( sa.length == 3 ) currentUVRadiation = sa[2];
+		}
+		
+		sa = sCurrent.match(/intensity of uv radiation : ([\w^n]*)/im);
+		if ( sa != null && sa.length >= 2 )	{
+			currentUVRadiation = sa[1];
 		}
 		
 		var lastUpdateTime = sLastUpdate.match(/([\d.]*).:([\d.]*)./im);
-		
-		_gel('ph_weather').innerHTML = "<img src=\""+ getCartoonPic(currentCartoon) +"\" alt=\""+ getCartoonText(currentCartoon) +"\"  title=\""+ getCartoonText(currentCartoon) +"\">";		
+		_gel('ph_lastupdate').innerHTML = saWord[7][gLang] +" : "+ lastUpdateTime[0];		
 		_gel('ph_temperature').innerHTML = currentTemperature +""+ String.fromCharCode(0x00b0) +"C";
 		_gel('ph_humidity').innerHTML = currentHumidity +""+ String.fromCharCode(0x0025);
-		_gel('ph_uvindex').style.backgroundColor = uvColorCode[currentUVIndex][1];
+		_gel('ph_weather').innerHTML = "<img src=\""+ getCartoonPic(currentCartoon) +"\" alt=\""+ getCartoonText(currentCartoon) +"\"  title=\""+ getCartoonText(currentCartoon) +"\">";
 		_gel('ph_uvindex').innerHTML = currentUVIndex + " <span>("+ uvColorCode[currentUVIndex][2+gLang] +")</span>";
-		_gel('ph_lastupdate').innerHTML = saWord[7][gLang] +" : "+ lastUpdateTime[0];
+		_gel('ph_uvindex').style.backgroundColor = uvColorCode[currentUVIndex][1];
 
 	} catch(e) {
 		//  alert( "fetchCurrent="+ e);
