@@ -18,7 +18,7 @@
      author_link="http://floatingcat.blogspot.com/"
     category="news"
     category2="lifestyle">
-	<Locale lang="zh-tw" country="hk"/>
+	<Locale lang="ALL_ALL" country="hk"/>
 	<Require feature="tabs" /> 
 	<Require feature="dynamic-height"/>	
 	<Require feature="analytics"/>
