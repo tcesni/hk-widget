@@ -1,0 +1,12 @@
+application: android-gateway
+version: 1
+runtime: python
+api_version: 1
+
+handlers:
+- url: /hkweather/update
+  script: gateway.py
+  login: admin
+
+- url: .*
+  script: gateway.py
