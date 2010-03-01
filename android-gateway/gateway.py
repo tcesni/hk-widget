@@ -18,16 +18,17 @@
 import logging
 import re
 import datetime
+
+from array import array
 from google.appengine.ext import webapp
 from google.appengine.ext.webapp import util
 from google.appengine.api import urlfetch
+from google.appengine.api import memcache
 from django.utils import simplejson
 
-refresh = None
-weather = ''
-warning = ''
-forecast = ''
-message = ''
+weather = None
+warning = None
+forecast = None
 
 currentUrl = "http://www.weather.gov.hk/textonly/forecast/englishwx.htm"
 warningUrl = "http://www.weather.gov.hk/textonly/warning/warn.htm"
@@ -38,6 +39,17 @@ forecastUrl = "http://www.weather.gov.hk/textonly/forecast/nday.htm"
 class MainHandler(webapp.RequestHandler):
 	def get(self):
 		self.response.out.write('*** android-gateway ***')
+
+		
+def setMemcache(name, value):
+	t = memcache.get(name)
+	if t is not None:
+		if not memcache.set(name, value, 3600):
+			logging.error("Memcache set "+ name +" failed.")
+	else:
+		if not memcache.add(name, value, 3600):
+			logging.error("Memcache add "+ name +" failed.")
+				
 # ##########################################################
 # flush parsed Weather Info to user
 class GetWeatherHandler(webapp.RequestHandler):
@@ -45,24 +57,38 @@ class GetWeatherHandler(webapp.RequestHandler):
 		global weather
 		global warning
 		global forecast 
-		global refresh		
-		global message
 		
 		self.response.headers['Content-Type'] = 'text/plain; charset=utf-8'
+		message = ''
 		
-		if weather == '':
-			message += '(no weather)'
+		weather = memcache.get("weather")
+		if weather is not None:
+			message += '*1'
+		else:
+			message += '+1'
 			fetchCurrent()
 		
-		if warning == '':
-			message += '(no warning)'
+		warning = memcache.get("warning")
+		if warning is not None:
+			message += '*2'
+		else:
+			message += '+2'
 			fetchWarning()
-				
+		
+		forecast = memcache.get("forecast")
+		if forecast is not None:
+			message += '*3'
+		else:
+			message += '+3'		
+			fetchForecast()
+		
 		self.response.out.write( 
 			simplejson.dumps({
-				'current':weather,
-				'warning':warning,
-				'msg':message
+			'current':weather,
+			'warning':warning,
+			'forecast':forecast,
+			'msg':message,
+			'notice':'Weather Information is provided by Hong Kong Observatory'
 			}, ensure_ascii= False))
 
 # ##########################################################
@@ -74,18 +100,22 @@ class UpdateWeatherHandler(webapp.RequestHandler):
 		fetchCurrent()
 		self.response.out.write(datetime.datetime.now().isoformat() +"\n")
 		self.response.out.write("fetch current weather completed\n")
+		
 		fetchWarning()
 		self.response.out.write("fetch warning in force completed\n")
 		self.response.out.write(datetime.datetime.now().isoformat() +"\n")
+		
+		fetchForecast()
+		self.response.out.write("fetch weather forecast completed\n")
+		self.response.out.write(datetime.datetime.now().isoformat() +"\n")
+
 
 # ##########################################################
 # Fetch Current Weather Info From HKO
 class fetchCurrent():
 	def __init__(self):
-		global refresh
 		global currentUrl
 		
-		refresh = datetime.datetime.now().isoformat()		
 		result = urlfetch.fetch(currentUrl)
 		if result.status_code == 200:
 			fetchCurrentCompleted(result.content)
@@ -102,7 +132,7 @@ class fetchCurrentCompleted():
 		m = re.search('<i>bulletin updated at ([\s\S.]*) HKT ([\s\S.]*)<\/i>', responseText, re.I + re.M)
 		if m is None:
 			logging.error('Cannot found content')
-			weather = null
+			setMemcache("weather", "")
 			return
 		else:
 			lastupdate = datetime.datetime.strptime(m.group(2) +' '+ m.group(1), "%d/%b/%Y %H:%M").isoformat()
@@ -151,14 +181,15 @@ class fetchCurrentCompleted():
 			"uvradiation":uvradiation
 		}
 		logging.debug('fetchWeather completed')
+		
+		setMemcache("weather", weather)
 
 # ##########################################################
 # Fetch Warning in force From HKO
 class fetchWarning():
 	def __init__(self):
-		global refresh
 		global warningUrl
-		refresh = datetime.datetime.now().isoformat()
+
 		result = urlfetch.fetch(warningUrl)
 		if result.status_code == 200:
 			fetchWarningCompleted(result.content)
@@ -175,13 +206,90 @@ class fetchWarningCompleted():
 		if m is None:
 			logging.warning('no warning')
 			warning = None
+			setMemcache("warning", warning)			
 			return
+			
 		entries = re.split("\n+", m.group(1))
 		#for entry in entries:
 		#	logging.info(entry)
 
 		warning = entries
-		logging.info('warning in force: %s', entries)		
+		logging.info('warning in force: %s', entries)
+		setMemcache("warning", entries)
+
+# ##########################################################
+# Fetch Weather Forecast From HKO
+class fetchForecast():
+	def __init__(self):
+		global forecastUrl
+		
+		result = urlfetch.fetch(forecastUrl)
+		if result.status_code == 200:
+			fetchForecastCompleted(result.content)
+			logging.debug('updated')
+		else:
+			logging.error('failed to update forecast : %d', result.status_code)
+				
+class fetchForecastCompleted():
+	def __init__(self, responseText):
+	
+		global forecast
+		
+		forecast = None
+		setMemcache("forecast", forecast)			
+
+		fc = [0,1,2,3,4,5,6] # 7 days forecast
+				
+		# date
+		m = re.findall('date\/month\\s(\\S+)\/(\\S+)\\s?\\((\\S+)\\)', responseText, re.I + re.M)
+		if m is None:
+			logging.warning( 'failed to fetch forecast date')
+			return
+		
+		idx = 0
+		for entry in m:
+			fcd =  { 'd':entry[0] +'/'+ entry[1], 'wd':entry[2], 'cartoon':0, 'tl':0, 'th':0, 'hl':0, 'hh':0 }
+			fc[idx] = fcd
+			idx = idx + 1
+		
+		# cartoon
+		m = re.findall('cartoon no. (\\d+)', responseText, re.I + re.M)
+		if m is None:
+			logging.warning( 'failed to fetch forecast cartoon')
+			return
+		idx = 0
+		for entry in m:
+			fc[idx]['cartoon'] = entry[0]	# cartoon
+			idx = idx + 1
+			
+		# temperature range
+		m = re.findall('temp range:\\s(\\S+)\\s-\\s(\\S+)\\sC', responseText, re.I + re.M)
+		if m is None:
+			logging.warning( 'failed to fetch forecast temp range')
+			return
+			
+		idx = 0
+		for entry in m:
+			fc[idx]['tl'] = entry[0]		# temperature range lowest
+			fc[idx]['th'] = entry[1]	# temperature range highest
+			idx = idx + 1				
+
+		# r.h. range
+		m = re.findall('r.h. range:\\s(\\d+)\\s-\\s(\\d+)\\sper cent', responseText, re.I + re.M)
+		if m is None:
+			logging.warning( 'failed to fetch forecast relative humidity range')
+			return
+			
+		idx = 0
+		for entry in m:
+			fc[idx]['hl'] = entry[0]	# relative humidity range lowest
+			fc[idx]['hh'] = entry[1]	# relative humidity range highest
+			idx = idx + 1		
+
+		logging.info(fc)
+		forecast = fc		
+		setMemcache("forecast", fc)
+            
 # ##########################################################
 # Main Loop and routes
 def main():
