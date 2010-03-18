@@ -49,7 +49,24 @@ def setMemcache(name, value):
 	else:
 		if not memcache.add(name, value, 3600):
 			logging.error("Memcache add "+ name +" failed.")
-				
+
+
+def WeekdayEnum(weekday):		
+	wd = weekday.lower()
+	if wd == 'monday':
+		return 1
+	if wd == 'tuesday':
+		return 2
+	if wd == 'wednesday':
+		return 3
+	if wd == 'thursday':
+		return 4
+	if wd == 'friday':
+		return 5
+	if wd == 'saturday':
+		return 6
+	return 0
+	
 # ##########################################################
 # flush parsed Weather Info to user
 class GetWeatherHandler(webapp.RequestHandler):
@@ -58,7 +75,7 @@ class GetWeatherHandler(webapp.RequestHandler):
 		global warning
 		global forecast 
 		
-		self.response.headers['Content-Type'] = 'text/plain; charset=utf-8'
+		self.response.headers['Content-Type'] = 'application/json'
 		message = ''
 		
 		weather = memcache.get("weather")
@@ -98,9 +115,9 @@ class UpdateWeatherHandler(webapp.RequestHandler):
 		logging.debug('UpdateWeatherHandler')
 		self.response.headers['Content-Type'] = 'text/plain; charset=utf-8'
 		fetchCurrent()
-		self.response.out.write(datetime.datetime.now().isoformat() +"\n")
 		self.response.out.write("fetch current weather completed\n")
-		
+		self.response.out.write(datetime.datetime.now().isoformat() +"\n")
+				
 		fetchWarning()
 		self.response.out.write("fetch warning in force completed\n")
 		self.response.out.write(datetime.datetime.now().isoformat() +"\n")
@@ -229,6 +246,7 @@ class fetchForecast():
 			logging.debug('updated')
 		else:
 			logging.error('failed to update forecast : %d', result.status_code)
+
 				
 class fetchForecastCompleted():
 	def __init__(self, responseText):
@@ -248,18 +266,19 @@ class fetchForecastCompleted():
 		
 		idx = 0
 		for entry in m:
-			fcd =  { 'd':entry[0] +'/'+ entry[1], 'wd':entry[2], 'cartoon':0, 'tl':0, 'th':0, 'hl':0, 'hh':0 }
+			wd = WeekdayEnum(entry[2])
+			fcd =  { 'd':entry[0] +'/'+ entry[1], 'wd':wd, 'cartoon':0, 'tl':0, 'th':0, 'hl':0, 'hh':0 }
 			fc[idx] = fcd
 			idx = idx + 1
 		
 		# cartoon
-		m = re.findall('cartoon no. (\\d+)', responseText, re.I + re.M)
+		m = re.findall('cartoon no.\\s(\\d+)\\s', responseText, re.I + re.M)
 		if m is None:
 			logging.warning( 'failed to fetch forecast cartoon')
 			return
 		idx = 0
 		for entry in m:
-			fc[idx]['cartoon'] = entry[0]	# cartoon
+			fc[idx]['cartoon'] = entry	# cartoon
 			idx = idx + 1
 			
 		# temperature range
