@@ -42,16 +42,21 @@ class MainHandler(webapp.RequestHandler):
 
 		
 def setMemcache(name, value):
-	t = memcache.get(name)
-	if t is not None:
-		if not memcache.set(name, value, 3600):
-			logging.error("Memcache set "+ name +" failed.")
+	cdata = memcache.get(name)
+	timeout = 3600
+	if value is None:
+		timeout = 0
+		
+	if cdata is not None:
+		if not memcache.set(name, value, timeout):
+			logging.error("Memcache::update "+ name +" failed.")
+		
 	else:
-		if not memcache.add(name, value, 3600):
-			logging.error("Memcache add "+ name +" failed.")
+		if not memcache.add(name, value, timeout):
+			logging.error("Memcache::create "+ name +" failed.")
 
 
-def WeekdayEnum(weekday):		
+def WeekdayEnum(weekday):
 	wd = weekday.lower()
 	if wd == 'monday':
 		return 1
@@ -80,21 +85,21 @@ class GetWeatherHandler(webapp.RequestHandler):
 		
 		weather = memcache.get("weather")
 		if weather is not None:
-			message += '*1'
+			message += 'M1'
 		else:
 			message += '+1'
 			fetchCurrent()
 		
 		warning = memcache.get("warning")
 		if warning is not None:
-			message += '*2'
+			message += 'M2'
 		else:
 			message += '+2'
 			fetchWarning()
 		
 		forecast = memcache.get("forecast")
 		if forecast is not None:
-			message += '*3'
+			message += 'M3'
 		else:
 			message += '+3'		
 			fetchForecast()
@@ -112,19 +117,28 @@ class GetWeatherHandler(webapp.RequestHandler):
 # Fetch Weather and Warning From HKO
 class UpdateWeatherHandler(webapp.RequestHandler):
 	def get(self):
+		
+		global weather
+		global warning
+		global forecast 
+		
 		logging.debug('UpdateWeatherHandler')
 		self.response.headers['Content-Type'] = 'text/plain; charset=utf-8'
+		
 		fetchCurrent()
-		self.response.out.write("fetch current weather completed\n")
-		self.response.out.write(datetime.datetime.now().isoformat() +"\n")
+		self.response.out.write(datetime.datetime.now().isoformat() +"\tfetch current weather completed\n")
+		self.response.out.write(weather)
+		self.response.out.write("\n")
 				
 		fetchWarning()
-		self.response.out.write("fetch warning in force completed\n")
-		self.response.out.write(datetime.datetime.now().isoformat() +"\n")
+		self.response.out.write(datetime.datetime.now().isoformat() +"\tfetch warning in force completed\n")
+		self.response.out.write(warning)
+		self.response.out.write("\n")
 		
 		fetchForecast()
-		self.response.out.write("fetch weather forecast completed\n")
-		self.response.out.write(datetime.datetime.now().isoformat() +"\n")
+		self.response.out.write(datetime.datetime.now().isoformat() +"\tfetch weather forecast completed\n")
+		self.response.out.write(forecast)
+		self.response.out.write("\n")
 
 
 # ##########################################################
@@ -136,9 +150,10 @@ class fetchCurrent():
 		result = urlfetch.fetch(currentUrl)
 		if result.status_code == 200:
 			fetchCurrentCompleted(result.content)
-			logging.debug('updated')
+			logging.debug('weather updated')
 		else:
 			logging.error('failed to update weather : %d', result.status_code)
+			
 				
 class fetchCurrentCompleted():
 	def __init__(self, responseText):
@@ -149,7 +164,7 @@ class fetchCurrentCompleted():
 		m = re.search('<i>bulletin updated at ([\s\S.]*) HKT ([\s\S.]*)<\/i>', responseText, re.I + re.M)
 		if m is None:
 			logging.error('Cannot found content')
-			setMemcache("weather", "")
+			setMemcache("weather", None)
 			return
 		else:
 			lastupdate = datetime.datetime.strptime(m.group(2) +' '+ m.group(1), "%d/%b/%Y %H:%M").isoformat()
@@ -207,32 +222,34 @@ class fetchWarning():
 	def __init__(self):
 		global warningUrl
 
-		result = urlfetch.fetch(warningUrl)
+		result = urlfetch.fetch(warningUrl, headers = {'Cache-Control':'max-age=300'})
 		if result.status_code == 200:
 			fetchWarningCompleted(result.content)
-			logging.debug('updated')
+			logging.debug('warning updated')
 		else:
-			logging.error('failed to update weather : %d', result.status_code)
+			logging.error('failed to update warning : %d', result.status_code)
 				
 class fetchWarningCompleted():
 	def __init__(self, responseText):
 	
 		global warning
-
-		m = re.search('<!--Warning Codes\n([\\s\\S.]*)\n-->', responseText, re.I + re.M)
+		
+		m = re.search('<!--Warning Codes[\r|\n|\r\n]([\\s\\S.]*)[\r|\n|\r\n]-->', responseText, re.I + re.M)
 		if m is None:
 			logging.warning('no warning')
 			warning = None
 			setMemcache("warning", warning)			
 			return
 			
+		# logging.info(m.group(0)) 
+		
 		entries = re.split("\n+", m.group(1))
-		#for entry in entries:
+		# for entry in entries:
 		#	logging.info(entry)
 
 		warning = entries
-		logging.info('warning in force: %s', entries)
-		setMemcache("warning", entries)
+		logging.info('warning in force: %s', warning)
+		setMemcache("warning", warning)
 
 # ##########################################################
 # Fetch Weather Forecast From HKO
@@ -243,7 +260,7 @@ class fetchForecast():
 		result = urlfetch.fetch(forecastUrl)
 		if result.status_code == 200:
 			fetchForecastCompleted(result.content)
-			logging.debug('updated')
+			logging.debug('forecast updated')
 		else:
 			logging.error('failed to update forecast : %d', result.status_code)
 
@@ -253,9 +270,6 @@ class fetchForecastCompleted():
 	
 		global forecast
 		
-		forecast = None
-		setMemcache("forecast", forecast)			
-
 		fc = [0,1,2,3,4,5,6] # 7 days forecast
 				
 		# date
@@ -305,9 +319,9 @@ class fetchForecastCompleted():
 			fc[idx]['hh'] = entry[1]	# relative humidity range highest
 			idx = idx + 1		
 
-		logging.info(fc)
-		forecast = fc		
-		setMemcache("forecast", fc)
+		forecast = fc
+		logging.info(forecast)		
+		setMemcache("forecast", forecast)
             
 # ##########################################################
 # Main Loop and routes
