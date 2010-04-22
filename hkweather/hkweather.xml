@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8" ?> 
+﻿<?xml version="1.0" encoding="UTF-8" ?> 
 <Module>
 <ModulePrefs title="香港天氣報告" 
 	directory_title="Weather"
@@ -11,13 +11,13 @@
 	author="floatingcat"
 	author_photo="http://floatingcat.googlepages.com/chunmiu.png"
 	author_email="floatingcat@gmail.com"
-	author_aboutme="I'm a developer come from Hong Kong, China. "
+	author_aboutme="I'm a developer come from Hong Kong, China."
 	author_affiliation="Google"
 	author_location="Hong Kong"
 	author_link="http://floatingcat.blogspot.com/"
     category="news"
     category2="lifestyle"
-	height="230">
+	width="280">
 	<Require feature="analytics"/>	
 	<Require feature="setprefs" /> 
 	<Require feature="settitle" /> 
@@ -30,180 +30,185 @@
 	<EnumValue value="0" display_value="Traditional Chinese" />
 	<EnumValue value="1" display_value="English" />
 </UserPref>
+<UserPref name="showWallpaper" display_name="Show Wallpaper" datatype="enum" default_value="1">
+	<EnumValue value="0" display_value="No, thank you" />
+	<EnumValue value="1" display_value="Yes, please" />
+</UserPref>
 
 <Content type="html">
 <![CDATA[
 <!-- ALm6fM1uWFv0Fl-Jd5yedzUtN0vJqiaeMZOo1ENXkn7TapfTCaDGUqm9FQJd34YGxBwbevjLzaNpXxmLet7uxFTnfHVh9tO0k96_Il-WHpC8-MMWLgzlCxR1iCQWTxHtjgbZVV3Mur5Ks-1Uk_ASBCfaDSoq7X6GBw== -->
 <div id="content_div">
-	<style type="text/css">
-	#main { 
-		font-size : 9pt;
-		width : 100%;
-		height : 100%;
-		table-layout : fixed;
-		padding : 0px;
-		margin : 0px;
-	} 
-	.newyear {
-		background-image : url(http://hk-widget.googlecode.com/svn/trunk/hkweather/hkw_newyear.png);
-		background-position : right center;
-		background-repeat : no-repeat;
-		background-attachment:fixed;
-	}
-	.spring { 
-		background-image : url(http://hk-widget.googlecode.com/svn/trunk/hkweather/hkw_spring.png);
-		background-position : right center;
-		background-repeat : no-repeat;
-		background-attachment:fixed;
-	} 
-	.summer { 
-		background-image : url(http://hk-widget.googlecode.com/svn/trunk/hkweather/hkw_summer.png);
-		background-position : right center;
-		background-repeat : no-repeat;
-		background-attachment:fixed;
-	} 
-	.autumn { 
-		background-image : url(http://hk-widget.googlecode.com/svn/trunk/hkweather/hkw_autumn.png);
-		background-position : right center;
-		background-repeat : no-repeat;
-		background-attachment:fixed;
-	} 
-	.winter { 
-		background-image : url(http://hk-widget.googlecode.com/svn/trunk/hkweather/hkw_winter.png);
-		background-position : right center;
-		background-repeat : no-repeat;
-		background-attachment:fixed;
-	}	
-	td.title { 
-		padding-bottom : 0;		
-	}
-	td.title div {
-		text-align:center;
-		overflow: hidden;
-		display: inline-block; 
-		width: 99%;
-		height: 14px;
-	}
-	.alpha {
-		opacity : 0.50;
-		filter : alpha(opacity=50,Style=0);	
-	}
-	td.lower { 
-		text-align:right; 
-		padding-bottom : 0;
-		border:2px solid #08f;
-		border-bottom : 0px;
-		background-color : #ccf;
-	}
-	td.frame {
-		font-size : 14pt;
-		border : 1px solid #888;
-		text-align : center;
-		height : 48px;
-	} 
-	.provider { 
-		text-align : right;
-		font-size : 6pt;
-	} 
-	#ph_weather img {
-		weight : 90%;
-		height : 90%;
-	}	
-	#ph_lunar {
-		font-size : 10pt;
-		background-color : #fcc;
-		border : 1px solid #f33;
-		height : 24px;
-	} 
+<style type="text/css">
+#main { 
+	font-size:9pt; 
+	padding:0px;
+	margin:0px; 
+	table-layout:fixed; 
+	width:100%;
+} 
 
-	#lblWarning { 
-		padding-bottom : 0;
-		border:2px solid #fc1;
-		border-top : 0px;
-		background-color : #ffb;
-	}
-	#ph_warning { 
-		border : 2px solid #fc1;
-		text-align : center;
-		overflow : hidden;
-		width : 100%;
-		height : 36px;
-	}
-	#ph_warning_ico { 
-		overflow: hidden;
-		display: inline-block; 
-		text-align : center;
-		height: 32px;
-		margin: 1px;
-		background-color: #ffb;
-	}	
-	#ph_warning_ico img { 
-		width : 32px; 
-		height : 32px;
-		padding : 1px;
-	}
-	
-	#ph_forecast { 
-		border : 2px solid #08f;
-		background-color : #ccf;
-		text-align : center;
-		width : 100%;
-	}	
-	#ph_forecast_ico {
-		overflow : hidden;
-		display : inline-block; 
-		text-align : center;
-		height : 32px;
-		margin : 1px;		
-	}
-	#ph_forecast_ico img { 
-		width : 32px; 
-		height : 32px;
-		padding : 1px;
-	}
-	#ph_uvindex { 
-		padding:1px;
-		font-size : 12pt;
-		width : 100%;
-		height : 100%;
-	}
-	#ph_uvindex span { 
-		font-size : 9pt;
-	}
-	#ph_lunarcalendar {
-		padding:2px 2px 4px 2px;text-align:center	
-	}
-	</style>
-	<table id="main" border="0" padding="0" spacing="0">
-		<tr><td id="ph_lunar" colspan="4"></td></tr>
-		<tr>
-			<td class="title"><div id="lblWeather">&nbsp;</div></td>
-			<td class="title"><div id="lblUvidx">&nbsp;</div></td>
-			<td class="title"><div id="lblTemp">&nbsp;</div></td>
-			<td class="title"><div id="lblHum">&nbsp;</div></td>
-		</tr><tr>
-			<td class="frame" id="ph_weather">???</td>
-			<td class="frame" id="ph_uvindex">???</td>
-			<td class="frame" id="ph_temperature">???</td>
-			<td class="frame" id="ph_humidity">???</td>
-		</tr><tr>
-			<td id="ph_warning" colspan="4"><div id="ph_warning_ico"></div></td>
-		</tr><tr>
-			<td id="lblWarning" colspan="2">&nbsp;</td>
-			<td id="lbl7days" class="lower" colspan="2">&nbsp;</td>
-		</tr><tr>
-			<td id="ph_forecast" colspan="4"><div id="ph_forecast_ico">&nbsp;</div></td>
-		</tr><tr>
-			<td class="provider" colspan="4">
-				<span id="lblProvider">&nbsp;</span> (<span id="ph_lastupdate">&nbsp;</span>) 
-			</td>
-		</tr>
-	</table>
+.newyear {
+	background-image : url(http://hk-widget.googlecode.com/svn/trunk/hkweather/hkw_newyear.png);
+	background-position : right center;
+	background-repeat : no-repeat;
+	background-attachment:fixed;
+}
+.spring { 
+	background-image : url(http://hk-widget.googlecode.com/svn/trunk/hkweather/hkw_spring.png);
+	background-position : right center;
+	background-repeat : no-repeat;
+	background-attachment:fixed;
+} 
+.summer { 
+	background-image : url(http://hk-widget.googlecode.com/svn/trunk/hkweather/hkw_summer.png);
+	background-position : right center;
+	background-repeat : no-repeat;
+	background-attachment:fixed;
+} 
+.autumn { 
+	background-image : url(http://hk-widget.googlecode.com/svn/trunk/hkweather/hkw_autumn.png);
+	background-position : right center;
+	background-repeat : no-repeat;
+	background-attachment:fixed;
+} 
+.winter { 
+	background-image : url(http://hk-widget.googlecode.com/svn/trunk/hkweather/hkw_winter.png);
+	background-position : right center;
+	background-repeat : no-repeat;
+	background-attachment:fixed;
+}	
+
+tr.title { 
+	height:14px; 
+}
+tr.title td { 
+	padding-bottom:0; 
+}
+tr.title td div { 
+	text-align:center;
+	overflow:hidden; 
+	display:inline-block; 
+	width:95%; 
+	height:15px;
+}
+tr.frame { 
+	height:48px;
+}
+tr.frame td { 
+	border:1px solid #888; 
+	font-size:14pt; 
+	text-align:center; 
+}
+.provider { 
+	text-align:right; 
+	font-size:6pt; 
+} 
+#ph_lunar { 
+	font-size:10pt; 
+	background-color:#fcc; 
+	border:1px solid #f33; 
+	height:24px; 
+}
+
+#lblWarning { 
+	padding-bottom:0; 
+	border:2px solid #fc1; 
+	border-top:0px; 
+	background-color:#ffb;
+}
+#ph_warning { 
+	border:2px solid #fc1; 
+	text-align:center; 
+	overflow:hidden; 
+	width:100%; 
+	height:36px; 
+	background-color:#ffb;
+}
+#lblForecast { 
+	text-align:right; 
+	padding-bottom:0; 
+	border:2px solid #08f; 
+	border-bottom:0px; 
+	background-color:#ccf; 
+}
+#ph_forecast { 
+	border:2px solid #08f; 
+	background-color:#ccf; 
+	text-align:center; 
+}
+
+#ph_warning_ico { 
+	position:relative;
+	display:inline-block;
+	text-align:center; 
+	height:36px;
+	overflow:hidden;
+}
+#ph_forecast_ico {
+	position:relative;
+	display:inline-block;
+	text-align:center; 
+	height:50px;
+	overflow:hidden;
+}
+
+.icolist { 
+	float:left;
+	padding:1px;
+	margin:1px;
+	width:32px; 
+	height:92%;
+	background-color:#ccc;
+}
+.icolist img { 
+	width:32px; 
+	height:32px;
+}
+		
+#ph_uvindex { 
+	padding:1px; 
+	font-size:12pt; 
+	width:100%; 
+	height:100%; 
+}
+#ph_uvindex span { 
+	font-size:9pt; 
+}
+#ph_lunarcalendar { 
+	padding:2px 2px 4px 2px;
+	text-align:center; 
+}
+</style>
+<table id="main" border="0" padding="0" spacing="0">
+	<tr><td id="ph_lunar" colspan="4"></td></tr>
+	<tr class="title">
+		<td><div id="lblWeather">&nbsp;</div></td>
+		<td><div id="lblUvidx">&nbsp;</div></td>
+		<td><div id="lblTemp">&nbsp;</div></td>
+		<td><div id="lblHum">&nbsp;</div></td>
+	</tr><tr class="frame">
+		<td id="ph_weather">???</td>
+		<td id="ph_uvindex">???</td>
+		<td id="ph_temperature">???</td>
+		<td id="ph_humidity">???</td>
+	</tr><tr>
+		<td id="ph_warning" colspan="4"><div id="ph_warning_ico"></div></td>
+	</tr><tr>
+		<td id="lblWarning" colspan="2">&nbsp;</td>
+		<td id="lblForecast" colspan="2">&nbsp;</td>
+	</tr><tr>
+		<td id="ph_forecast" colspan="4"><div id="ph_forecast_ico">&nbsp;</div></td>
+	</tr><tr>
+		<td class="provider" colspan="4">
+			<span id="lblProvider">&nbsp;</span> (<span id="ph_lastupdate">&nbsp;</span>) 
+		</td>
+	</tr>
+</table>
 </div>
+
 <script type="text/javascript">
-/*****************************************************************************
-	Extend String Object functions
-*****************************************************************************/	
+/* Extend String Object functions */	
 String.prototype.LZero = function(max) {
 	var sOut = this;
 	for ( var i = 0; i < max - this.length; i ++ ) {
@@ -215,40 +220,33 @@ String.prototype.trim = function() {
 	var m = this.match(/^\s*(\S+(\s+\S+)*)\s*$/);
 	return (m == null) ? "" : m[1];	
 }
-/*****************************************************************************
-	Local Weather Info
-*****************************************************************************/
-var isFireFox = navigator.userAgent.toLowerCase().indexOf("firefox") > 0 ? true : false;
 
-//====================================== Url of Current Weather Warnings from HKO
-var sCurrentUrl = "http://www.weather.gov.hk/textonly/forecast/englishwx.htm";
-var sWarningUrl = "http://www.weather.gov.hk/textonly/warning/warn.htm";
-var sForecastUrl = "http://www.weather.gov.hk/textonly/forecast/nday.htm";
+/* Local Weather Info */
+// var isFireFox = navigator.userAgent.toLowerCase().indexOf("firefox") > 0 ? true : false;
+var isMSIE = /MSIE (\d+\.\d+);/.test(navigator.userAgent);
 
-//====================================== Weather cartoon url prefix
+// HK Weather Gateway
+var sGatewayUrl = "http://android-gateway.appspot.com/hkweather";
+// Weather cartoon url prefix
 var sCartoonPrefix = "http://www.weather.gov.hk/images/wxicon/";
 var sWarningPrefix = "http://www.weather.gov.hk/textonly/img/warn/";
 var sForecastPrefix = "http://www.weather.gov.hk/images/wxicon/small/pic50.png";
 var gLang = 0;
+var gShowWallpaper = 0;
 
-function setLocale() {
-	_IG_SetTitle(saTitle[gLang]);
-	setItemText(_gel("lblWeather"), saWord[0][gLang]);
-	setItemText(_gel("lblUvidx"), saWord[1][gLang]);
-	setItemText(_gel("lblTemp"), saWord[2][gLang]);
-	setItemText(_gel("lblHum"), saWord[3][gLang]);
-	setItemText(_gel("lblWarning"), saWord[4][gLang]);
-	setItemText(_gel("lbl7days"), saWord[5][gLang]);
-	setItemText(_gel("lblProvider"), saWord[6][gLang]);
-}
-
-function setItemText(el,s) {
-	el.innerHTML = s;
-	el.setAttribute("title", s);
-}
-//====================================== Weather Enums
+// -- Weather Enums --
 var saTitle = [
 	"香港天氣報告", "Hong Kong Weather"
+];
+
+var weekdayTexts = [
+	[0, "日", "SU"],
+	[1, "一", "MO"],
+	[2, "二", "TU"],
+	[3, "三", "WE"],
+	[4, "四", "TH"],
+	[5, "五", "FR"],
+	[6, "六", "SA"]
 ];
 
 var saWord = [
@@ -337,119 +335,39 @@ var uvColorCode = [
 	[14, "#998cff", "極高", "Extreme"],
 	[15, "#998cff", "極高", "Extreme"]
 ];
-//======================================
-function fetchCurrent(responseText) {
-	try {
-		var sLastUpdate = "", currentTemperature = 0, currentHumidity = 0; 
-		var currentCartoon = 0, currentCartoonText = "", currentUVIndex = 0, currentUVRadiation = 0;
-		var sCurrent = responseText;
-		
-		var sa;
-		sa = sCurrent.match(/<i>bulletin updated at ([\s\S.]*)<\/i>/im);
-		if ( sa != null && sa.length == 2 )	sLastUpdate = sa[1];
-
-		sa = sCurrent.match(/air temperature : ([\d.]*) degrees celsius/im);
-		if ( sa != null && sa.length == 2 ) currentTemperature = parseInt(sa[1], 10);
-
-		sa = sCurrent.match(/relative humidity : ([\d.]*) per cent/im);
-		if ( sa != null && sa.length == 2 )	currentHumidity = parseInt(sa[1], 10);
-
-		sa = sCurrent.match(/weather cartoon : No.(\s|)([\d.]*) - ([\w^n]*)/im);
-		if ( sa != null && sa.length >= 3 ) {
-			currentCartoon = parseInt(sa[2], 10);
-		}
-
-		sa = sCurrent.match(/the mean uv index recorded at king's park : ([\d.]*)/im);
-		if ( sa != null && sa.length >= 2 )	{
-			currentUVIndex = parseInt(sa[1], 10);
-		}
-		
-		sa = sCurrent.match(/intensity of uv radiation : ([\w^n]*)/im);
-		if ( sa != null && sa.length >= 2 )	{
-			currentUVRadiation = sa[1];
-		}
-		
-		var lastUpdateTime = sLastUpdate.match(/([\d.]*).:([\d.]*)./im);
-		_gel('ph_lastupdate').innerHTML = saWord[7][gLang] +" : "+ lastUpdateTime[0];		
-		_gel('ph_temperature').innerHTML = currentTemperature +""+ String.fromCharCode(0x00b0) +"C";
-		_gel('ph_humidity').innerHTML = currentHumidity +""+ String.fromCharCode(0x0025);
-		_gel('ph_weather').innerHTML = "<img src=\""+ getCartoonPic(currentCartoon) +"\" alt=\""+ getCartoonText(currentCartoon) +"\"  title=\""+ getCartoonText(currentCartoon) +"\">";
-		_gel('ph_uvindex').innerHTML = currentUVIndex + " <span>("+ uvColorCode[currentUVIndex][2+gLang] +")</span>";
-		_gel('ph_uvindex').style.backgroundColor = uvColorCode[currentUVIndex][1];
-
-	} catch(e) {
-		//  alert( "fetchCurrent="+ e);
-		return false;
-	}
-	return true;	   
+/* functions */
+function setLocale() {
+	// _IG_SetTitle(saTitle[gLang]);
+	gadgets.window.setTitle(saTitle[gLang]);
+	setItemText(_gel("lblWeather"), saWord[0][gLang]);
+	setItemText(_gel("lblUvidx"), saWord[1][gLang]);
+	setItemText(_gel("lblTemp"), saWord[2][gLang]);
+	setItemText(_gel("lblHum"), saWord[3][gLang]);
+	setItemText(_gel("lblWarning"), saWord[4][gLang]);
+	setItemText(_gel("lblForecast"), saWord[5][gLang]);
+	setItemText(_gel("lblProvider"), saWord[6][gLang]);
 }
-//======================================
+function setItemText(el,s) {
+	el.innerHTML = s;
+	el.setAttribute("title", s);
+}
 function getCartoonPic( cartoonNum ) {
 	return sCartoonPrefix +"pic"+ cartoonNum +".png";
 }
-//======================================
 function getCartoonText( cartoonNum ) {
 	for ( var i=0; i < cartoonTexts.length; i ++ ) {
 		if ( cartoonTexts[i][0] == cartoonNum ) return cartoonTexts[i][1+gLang];  
 	}
 	return "";
 }
-//====================================== 
-function fetchWarning(responseText) {
-	try {
-		var html = "";	
-		var warningPage = responseText;
-		var re = new RegExp("<!--Warning Codes\n([\\s\\S.]*)\n-->");
-		var sMatch = warningPage.match(re);
-
-		if ( sMatch == null ) {
-			html = "";
-			_gel('ph_warning_ico').setAttribute(isFireFox ? "class" : "className", "alpha");
-			_gel('lblWarning').setAttribute(isFireFox ? "class" : "className", "alpha");
-		} else if ( sMatch.length >= 2 ) { 				
-			var saMatch = sMatch[1].split("\n");
-			for ( var i=0; i < saMatch.length; i ++ ) {
-				var warningCode = parseInt(saMatch[i].replace(" ", ""),10);
-				html += "<img src=\""+ sWarningPrefix + warningTexts[warningCode][0] +"\""
-					+ " alt=\""+ warningTexts[warningCode][1] +"\""
-					+ " title=\""+ warningTexts[warningCode][1] +"\">";
-			}		
-		}
-		_gel('ph_warning_ico').innerHTML = html;
-	} catch(e) {
-		// alert("fetchWarning="+ e);
-		return false;
+function getWeekdayText( weekdayNum ) {
+	for ( var i=0; i < weekdayTexts.length; i ++ ) {
+		if ( weekdayTexts[i][0] == weekdayNum ) return weekdayTexts[i][1+gLang];  
 	}
-	return true;
+	return "";
 }
-//======================================
-function fetchForecast(responseText) {
-	try { 
-		var html = "";	
-		var forecastPage = responseText;
-		var sMatch = forecastPage.match(/cartoon no. (\d+)/ig);
-		var sDay = forecastPage.match(/Date\/Month (\d+\/\d+)/img);
 
-		if ( sMatch == null || sDay == null ) {
-			html = "&nbsp;";
-		} else if ( sMatch.length == sDay.length ) {
-
-			for ( var i=0; i < sMatch.length; i ++ ) {
-				var cartoonCode = parseInt(sMatch[i].replace("cartoon no. ", ""),10);
-				html += "<img src=\""+ getCartoonPic(cartoonCode) +"\""
-					+ " title=\""+ sDay[i].replace("Date/Month ","") +"  "+ getCartoonText( cartoonCode ) +"\">";
-			}
-		}
-		_gel('ph_forecast_ico').innerHTML = html;
-	} catch(e) {
-		// alert("fetchForecast="+ e);
-		return false;
-	}
-	return true;
-}
-//*****************************************************************************
-//	Lunar Calendar 農曆日期
-//*****************************************************************************
+/* Lunar Calendar 農曆日期 */
 var lunarInfo = [
 	0x4bd8,0x4ae0,0xa570,0x54d5,0xd260,0xd950,0x5554,0x56af,0x9ad0,0x55d2,
 	0x4ae0,0xa5b6,0xa4d0,0xd250,0xd295,0xb54f,0xd6a0,0xada2,0x95b0,0x4977,
@@ -546,30 +464,29 @@ var lunarFtv = [	//農曆節日 *表示放假日
 	["1223", "謝灶", "Kitchen God Festival"],
 	["0100", "除夕", "Lunar New Year's Eve"] 
 ];
-//====================================== 傳回農曆 y年的總天數
+/* 傳回農曆 y年的總天數 */
 function lYearDays(y) {
 	 var i, sum = 348;
 	for (i=0x8000; i>0x8; i>>=1) sum += (lunarInfo[y-1900] & i)? 1: 0;
 	return(sum+leapDays(y));
 }
-//====================================== 傳回農曆 y年閏月的天數
+/* 傳回農曆 y年閏月的天數 */
 function leapDays(y) {
 	if(leapMonth(y)) 
 		return( (lunarInfo[y-1899]&0xf)==0xf? 30: 29);
    	else 
    		return(0);
 }
-//====================================== 傳回農曆 y年閏哪個月 1-12 , 沒閏傳回 0
+/* 傳回農曆 y年閏哪個月 1-12 , 沒閏傳回 0 */
 function leapMonth(y) {
 	var lm = lunarInfo[y-1900] & 0xf;
 	return(lm==0xf?0:lm);
 }
-//====================================== 傳回農曆 y年m月的總天數
+/* 傳回農曆 y年m月的總天數 */
 function monthDays(y,m) {
 	return( (lunarInfo[y-1900] & (0x10000>>m))? 30: 29 );
 }
-//====================================== 算出農曆, 傳入日期物件, 傳回農曆日期物件
-//  該物件屬性有 .year .month .day .isLeap
+/* 算出農曆, 傳入日期物件, 傳回農曆日期物件. 該物件屬性有 .year .month .day .isLeap */
 function Lunar(objDate) {				   
 	var i, leap = 0, temp = 0;
 	var offset = (Date.UTC(objDate.getFullYear(),objDate.getMonth(),objDate.getDate()) - Date.UTC(1900,0,31))/86400000;		   
@@ -603,18 +520,18 @@ function Lunar(objDate) {
 	this.month = i;
 	this.day = offset + 1;
 }
-//============================== 傳回國曆 y年某m+1月的天數
+/* 傳回國曆 y年某m+1月的天數 */
 function solarDays(y,m) {
 	if(m==1)
 		return(((y%4 == 0) && (y%100 != 0) || (y%400 == 0))? 29: 28);
 	else
 		return(solarMonth[m]);
 }
-//============================== 傳入 offset 傳回干支, 0=甲子
+/* 傳入 offset 傳回干支, 0=甲子 */
 function cyclical(num) {
 	return(Gan[num%10]+Zhi[num%12]);
 }
-//============================== 月曆屬性
+/* 月曆屬性 */
 function calElement(sYear,sMonth,sDay,week,lYear,lMonth,lDay,isLeap,cYear,cMonth,cDay) {
 	this.isToday    = false;
 	//國曆
@@ -636,12 +553,12 @@ function calElement(sYear,sMonth,sDay,week,lYear,lMonth,lDay,isLeap,cYear,cMonth
 	this.solarFestival = ''; //國曆節日
 	this.solarTerms    = ''; //節氣
 }
-//============================== 某年的第n個節氣為幾日(從0小寒起算)
+/* 某年的第n個節氣為幾日(從0小寒起算) */
 function sTerm(y,n) {
    var offDate = new Date( ( 31556925974.7*(y-1900) + sTermInfo[n]*60000  ) + Date.UTC(1900,0,6,2,5) );
    return(offDate.getUTCDate());
 }
-//============================== 傳回月曆物件 (y年,m+1月)
+/* 傳回月曆物件 (y年,m+1月)
 //
 // 功能說明: 傳回整個月的日期資料物件 
 // 使用方式: OBJ = new calendar(年,零起算月); 
@@ -649,8 +566,7 @@ function sTerm(y,n) {
 // OBJ.firstWeek   傳回當月一日星期	  
 // 由 OBJ[日期].屬性名稱 即可取得各項值	
 // OBJ[日期].isToday  傳回是否為今日 true 或 false  
-// 其他 OBJ[日期] 屬性參見 calElement() 中的註解
-//
+// 其他 OBJ[日期] 屬性參見 calElement() 中的註解 */
 function calendar(y,m,i) {	   
 	var sDObj, lDObj, lY, lM, lD=1, lL, lX=0, tmp1, tmp2, tmp3;
 	var cY, cM, cD; //年柱, 月柱, 日柱
@@ -707,7 +623,7 @@ function calendar(y,m,i) {
 		this[0].solarTerms = solarTerm[m*2+1][gLang];
 	}
 }
-//======================================= 傳回該年的復活節(春分後第一次滿月週後的第一主日)
+/* 傳回該年的復活節(春分後第一次滿月週後的第一主日) */
 function easter(y) {
 	var term2 = sTerm(y,5); //取得春分日期
 	var dayTerm2 = new Date(Date.UTC(y,2,term2,0,0,0,0)); //取得春分的國曆日期物件(春分一定出現在3月)
@@ -725,7 +641,7 @@ function easter(y) {
 	this.m = dayEaster.getUTCMonth();
 	this.d = dayEaster.getUTCDate();
 }
-//======================================= 傳回農曆節日
+/* 傳回農曆節日 */
 function getLunarFtv(m, d) {
 	var mday = m.toString().LZero(2) + d.toString().LZero(2);
 	for ( var i=0; i < lunarFtv.length; i ++ ) {
@@ -733,7 +649,7 @@ function getLunarFtv(m, d) {
 	}
 	return "";
 }
-//====================== 中文日期
+/* 中文日期 */
 function cDay(d){
 	var s;
 	switch (d) {
@@ -746,7 +662,7 @@ function cDay(d){
 	}
 	return(s);
 }
-//====================== english day
+/* english day */
 function eDay(d){
 	var s;
 	switch (d) {
@@ -761,7 +677,7 @@ function eDay(d){
 	}
 	return(s);
 }	
-//====================== Today Lunar Calendar Info
+/* Today Lunar Calendar Info */
 function calculateLunar(thisDay) {
 	var y = thisDay.getFullYear();
 	var m = thisDay.getMonth();
@@ -793,79 +709,184 @@ function calculateLunar(thisDay) {
 	_gel('ph_lunar').innerHTML = html;
 	_gel('ph_lunar').setAttribute("title", "Agricultural Calender 農曆");
 
-	changeTableBackground( oLunar[md].lMonth );
+	changeWallpaper( oLunar[md].lMonth, oLunar[md].lDay );
 }
-//======================
-function changeTableBackground(lunarMonth) {
+// change wallpaper based on season
+function changeWallpaper(lunarMonth, lunarDay) {
+	if ( gShowWallpaper != 1 ) {
+		return;
+	}
+	var ffOpacity = '0.8';
+	var ieOpacity = 'alpha(opacity=80)';
+	_gel('ph_warning').style.opacity = ffOpacity;
+	_gel('ph_forecast').style.opacity = ffOpacity;
+	_gel('lblWarning').style.opacity = ffOpacity;
+	_gel('lblForecast').style.opacity = ffOpacity;
+	if ( isMSIE ) {
+		_gel('ph_warning').style.filter = ieOpacity;
+		_gel('ph_forecast').style.filter = ieOpacity;
+		_gel('lblWarning').style.filter = ieOpacity;
+		_gel('lblForecast').style.filter = ieOpacity;
+	}
 	
 	var sCSS = "";
 	switch( lunarMonth ) {
 		case 1:
-			sCSS = "newyear";
+			sCSS = 'newyear';
+			if ( lunarDay > 15 ) {
+				sCSS = 'spring';
+			}
 			break;	
 		case 2:
 		case 3:
-			sCSS = "spring";
+			sCSS = 'spring';
 			break;
 		case 4:
 		case 5:
 		case 6:
-			sCSS = "summer";
+			sCSS = 'summer';
 			break;
 		case 7:
 		case 8:
 		case 9:
-			sCSS = "autumn";
+			sCSS = 'autumn';
 			break;
 		default:
-			sCSS = "winter";
+			sCSS = 'winter';
 	}
-	_gel('main').setAttribute( isFireFox ? "class" : "className", sCSS);
+	_gel('main').setAttribute( isMSIE ? 'className' : 'class', sCSS);
 }
 
-function reScaleGadget() {
-	_IG_AdjustIFrameHeight();
-	
-	var scrWidth = document.body.clientWidth;
-	var xmlWidth = 300;
-	if ( scrWidth > xmlWidth ) return;
-	
-	var ratio = (xmlWidth - (xmlWidth - scrWidth)) / xmlWidth;
-	if ( ratio < 0.9 ) {
-		_gel("ph_temperature").style.fontSize = "12pt";
-		_gel("ph_humidity").style.fontSize = "12pt";
+
+function fetchGatewayCompleted(obj) {
+	try {
+		if ( obj != null && obj.data != null ) {
+			var json = obj.data;
+			
+			var sLastUpdate = json.current.modified;
+			var currentTemperature = json.current.temperature;
+			var currentHumidity = json.current.humidity;
+			var currentCartoon = json.current.cartoon;
+			var currentUVIndex = json.current.uvindex;
+			var currentUVColor = Math.floor(json.current.uvindex);
+			var currentUVRadiation = json.current.uvradiation;			
+			var lastUpdateTime = sLastUpdate.match(/([\d.]*).:([\d.]*)./im);
+			
+			try {
+				var el = _gel('ph_lastupdate');
+				el.innerHTML = saWord[7][gLang] +' : '+ lastUpdateTime[0];
+			} catch (e) {
+			}
+			
+			try {
+				var el = _gel('ph_temperature');
+				el.innerHTML = currentTemperature +''+ String.fromCharCode(0x00b0) +'C';
+			} catch (e) {
+			}
+			
+			try {
+				var el = _gel('ph_humidity');
+				el.innerHTML = currentHumidity +''+ String.fromCharCode(0x0025);
+			} catch (e) {
+			}
+			
+			try {
+				var el = _gel('ph_weather');
+				el.innerHTML = '';
+				var tip = getCartoonText(currentCartoon);
+				var pic = getCartoonPic(currentCartoon);
+				var img = document.createElement('img');				
+				img.setAttribute('src', pic);
+				img.setAttribute(isMSIE ? 'alt' : 'title', tip);
+				el.appendChild(img);
+			} catch (e) {
+			}
+			
+			try {
+				var el = _gel('ph_uvindex');
+				el.innerHTML = currentUVIndex + " <span>("+ uvColorCode[currentUVColor][2+gLang] +")</span>";
+				el.style.backgroundColor = uvColorCode[currentUVColor][1];
+			} catch (e) {
+			}
+			
+			try {
+				var el = _gel('ph_forecast_ico');
+				el.innerHTML = '';				
+				if ( json.forecast == null ) {
+				} else {
+					for ( var i=0; i < json.forecast.length; i ++ ) {
+						var cartoonCode = parseInt(json.forecast[i].cartoon, 10);
+						var weekdayCode = json.forecast[i].wd;
+						var sTitle = json.forecast[i].d +' ('+ getWeekdayText(weekdayCode) +')  '+ getCartoonText(cartoonCode);
+							
+						var icon = createIcon(sTitle, getCartoonPic(cartoonCode), json.forecast[i].tl +'|'+ json.forecast[i].th);
+						el.appendChild(icon);
+					}
+				}
+			} catch (e) {
+			}
+			
+			try {
+				var el = _gel('ph_warning_ico');
+				el.innerHTML = '';
+				if ( json.warning == null ) {
+				} else {
+					for ( var i=0; i < json.warning.length; i ++ ) {						
+						var nWarningCode = parseInt(json.warning[i].replace(" ", ""), 10);
+						var sTitle = warningTexts[nWarningCode][1];
+						var icon = createIcon(sTitle, sWarningPrefix + warningTexts[nWarningCode][0]);
+						el.appendChild(icon);
+					}
+				}
+			} catch (e) {
+			}
+		}
+		gadgets.window.adjustHeight();
+	} catch(e) {
 	}
 }
-/*****************************************************************************
-	Main function
-*****************************************************************************/	
+
+function createIcon(sTitle, sIcon, sTips) {
+	var container = document.createElement('span');
+	container.setAttribute(isMSIE ? 'className' : 'class', 'icolist');
+	container.setAttribute('title', sTitle);	
+	var img = document.createElement('img');
+	img.setAttribute('src', sIcon);
+	container.appendChild(img);	
+	if ( sTips && sTips.length > 0 ) {
+		var div = document.createElement('div');		
+		var node = document.createTextNode(sTips);
+		div.appendChild(node);
+		container.appendChild(div);
+	}
+	return container;
+}
+
+/* Main */
 function showInfo() {
 	
 	var prefs = new _IG_Prefs();
-	gLang = prefs.getInt("dispLang");
+	gLang = prefs.getInt('dispLang');
+	gShowWallpaper = prefs.getInt('showWallpaper');
 	if ( isNaN(gLang) ) gLang = 1;
+	if ( isNaN(gShowWallpaper) ) gShowWallpaper = 1;
 
 	setLocale();
-	
-	// Get Current Weather Info
-	_IG_FetchContent(sCurrentUrl, _IG_Callback(fetchCurrent), { refreshInterval: 600 });
-	
-	// Get Weather Warnings
-	_IG_FetchContent(sWarningUrl, _IG_Callback(fetchWarning), { refreshInterval: 600 });
-	
-	// Get Weather Forecast
-	_IG_FetchContent(sForecastUrl, _IG_Callback(fetchForecast));
+
+	var params = {};
+	params[gadgets.io.RequestParameters.CONTENT_TYPE] = gadgets.io.ContentType.JSON;
+	gadgets.io.makeRequest(sGatewayUrl, fetchGatewayCompleted, params);
 
 	// Calculate Lunar Calendar Info
 	var today = new Date(); 
 	calculateLunar( today ); 
-	
-	reScaleGadget();
+
 	// Register Analytics
 	_IG_Analytics("UA-760829-2", "/hkweather");
 }	 
-_IG_RegisterOnloadHandler(showInfo);
+gadgets.util.registerOnLoadHandler(showInfo);
 </script>
   ]]>
   </Content>
 </Module>
+
