@@ -49,7 +49,7 @@ li { padding-left:2px; margin-top:1px; width:280px; height:20px; font-size:10pt;
 </style>
 
 <span id="r33_header">
-<label for="cbt3"><input id="cbt3" type="checkbox" name="cbFav" title="只列出最愛"></label>
+<label for="cbt3"><input id="cbt3" type="checkbox" name="cbFav" title="只列出最愛" onClick="fnUpdate();"></label>
 <input id="search" name="search" size="12"><input type="button" onClick="fnUpdate();" value="go" title="我想搵">
 <label for="cbt1"><input id="cbt1" type="radio" name="type" onClick="fnShowTab(1);" checked> 出售 <span id="sell"></span> </label>
 <label for="cbt2"><input id="cbt2" type="radio" name="type" onClick="fnShowTab(2);"> 徵求 <span id="buy"></span> </label>
@@ -85,8 +85,8 @@ String.prototype.trim = function() {
 	return (m == null) ? "" : m[1];	
 }
 function fnWriteError(sErr) {
-    var el = _gel("r33_error_panel");
-    el.style.display = "block";
+    var el = _gel("r33_tab_preview");
+    // el.style.display = "block";
     el.innerHTML = "Error: "+ sErr;
 }
 //************************************************
@@ -127,7 +127,12 @@ function fnPreview(r33ItemId) {
     el.style.height = "160px";
 	el.innerHTML = "<center><img src=\""+ sLoadingUrl +"\" border=\"0\"><br>等等...</center>";
 	var sUrl = sDetailUrl + escape(r33ItemId);
-	_IG_FetchContent(sUrl, _IG_Callback(fetchPreview));
+	
+	var params = {};
+	params[gadgets.io.RequestParameters.CONTENT_TYPE] = gadgets.io.ContentType.TEXT;
+	gadgets.io.makeRequest(sUrl, fetchPreview, params);	
+	
+//	_IG_FetchContent(sUrl, _IG_Callback(fetchPreview));
 }
 
 function openWin(sWinName, sFile) {
@@ -255,33 +260,71 @@ function buildItem(i, sTitle, sLinkId, nType, bFavorite) {
     return li;
 }
 
+function fixEvilText(html) {
+	var validedText = "";
+	if ( html ) {
+		if ( html.text ) { 
+			validedText = html.text;
+		} else {
+			var UNPARSEABLE_CRUFT = "throw 1; < don't be evil' >";
+			var validedText = html.toString();
+			if ( validedText.indexOf(UNPARSEABLE_CRUFT) >= 0 ) {
+				var cutText = validedText.replace("throw 1; < don't be evil' >", "");				
+				var json = eval("("+ cutText +")");
+				for ( var urldata in json ) {
+					if ( urldata && json[urldata] ) {
+						validedText = json[urldata].body.toString();
+						break;
+					}
+				}
+			}
+		}
+	}
+	if ( validedText.indexOf('<HTML>') > 0 ) {
+		validedText = validedText.substr(validedText.indexOf('<HTML>'));
+	}
+	return validedText;	
+}
+
 function fetchPreview(responseText) {	
-	try {		
+	try {
+		var validedText = fixEvilText(responseText);
 		var doc = document.createElement("div");
-		doc.innerHTML = responseText;
+		doc.innerHTML = validedText;
 		
 		var tbl = doc.getElementsByTagName("table");
 		var sHtml = "Cannot preview";
 		if ( tbl != null ) {
 			sHtml = "";
-			for ( var i=1; i < tbl.length -2; i ++ ) {
-				var td = tbl[i].getElementsByTagName("td");
-				if ( td != null && td.length == 3 ) {
-                    var sItem = "";
-					var sName = td[1].innerHTML;
-					var epos = sName.toLowerCase().indexOf("<br>");
-					if (epos > 0) sName = sName.substr(0,epos);
-					sContent = td[0].innerHTML;
-					sDateTime = td[2].innerHTML;
-
+			for ( var i=2; i < tbl.length -2; i ++ ) {
+				var td = tbl[i].getElementsByTagName('td');
+				if ( td != null && td.length >= 3 ) {
+                    var sItem = '';
+					var sContent = td[0].innerHTML;
                     // find first <br/> to remove first anchor tag
-                    var pos = sContent.indexOf("<br>");
+                    var pos = sContent.indexOf('<br>');
                     if ( pos > 0 ) {
                         sContent = sContent.substring(pos + 4);
                     }
-
+					
+					var sName = td[1].innerHTML;
+					if ( td.length >= 4 ) {
+						sName = td[2].innerHTML;
+					}
+					var epos = sName.toLowerCase().indexOf('<br>');
+					if (epos > 0) { 
+						sName = sName.substr(0,epos);
+					}
+					
+					var sDateTime = '';
+					if ( td.length >= 4 ) {
+						sDateTime = td[3].innerHTML;
+					} else {
+						sDateTime = td[2].innerHTML;
+					}
+                    
                     sItem = "<div id=\"r33_msg\"><span>"+ sName +"    </span>&nbsp;"+ sDateTime +"<br/>"
-                        + "<div>"+ sContent.replace("<br/><br/>", "<br/>") +"    </div></div>";
+                        + "<div>"+ magicView(sContent) +"    </div></div>";
 
 					sHtml += sItem;
 				}
@@ -293,6 +336,19 @@ function fetchPreview(responseText) {
 		fnWriteError("fetchPreview="+ e);
 		return false;	
 	}
+}
+
+function magicView(html) {
+	var sOut = html;	
+	var m = html.match(/http:\/\/\w+\.photobucket.com\/albums\/\S+[.jpg|.gif|.png]/ig);
+	if ( m != null ) {
+		for ( var i = 0; i < m.length; i ++ ) {
+			var holder = m[i];
+			var imgtab = '<img src=\"'+ holder +'\">';
+			sOut = sOut.replace(holder, imgtab);
+		}
+	}	
+	return sOut.replace('<br/><br/>', '<br/>');
 }
 /*************************************************
 	Main function
