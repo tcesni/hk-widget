@@ -340,14 +340,17 @@ function fetchPreview(responseText) {
 
 function magicView(html) {
 	var sOut = html;	
-	var m = html.match(/http:\/\/\w+\.photobucket.com\/albums\/\S+[.jpg|.gif|.png]/ig);
+	var m = html.match(/>(http:\/\/\w+\.photobucket.com\/albums\/\S+[.jpg|.gif|.png]<)/ig);
 	if ( m != null ) {
 		for ( var i = 0; i < m.length; i ++ ) {
 			var holder = m[i];
-			var imgtab = '<img src=\"'+ holder +'\">';
-			sOut = sOut.replace(holder, imgtab);
+			if ( holder && holder.length > 2 ) {
+				var mod = holder.substr(1, holder.length - 2);
+				var imgtab = '><img src=\"'+ mod +'\" border="0"><';
+				sOut = sOut.replace(holder, imgtab);
+			}
 		}
-	}	
+	}
 	return sOut.replace('<br/><br/>', '<br/>');
 }
 /*************************************************
