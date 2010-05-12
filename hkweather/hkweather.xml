@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="UTF-8" ?> 
 <Module>
 <ModulePrefs title="香港天氣報告" 
-	directory_title="Weather"
+	directory_title="Hong Kong Weather Report"
 	description="提供最新香港天氣報告, 紫外線指數, 現時生效警告, 七日天氣預告, 及是日農曆資訊. Provide Most Updated Hong Kong Local Weather Info, UV-Index, Warning In Force, 7 days forecast, and Lunar calendar info."
 	title_url="http://www.weather.gov.hk"
 	screenshot="http://hk-widget.googlecode.com/svn/trunk/hkweather/hkwscreen.png"
