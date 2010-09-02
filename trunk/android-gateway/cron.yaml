@@ -1,4 +1,4 @@
 cron:
 - description: update weather job
   url: /hkweather/update
-  schedule: every 15 minutes
+  schedule: every 6 minutes
