@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="UTF-8" ?> 
+<?xml version="1.0" encoding="UTF-8" ?> 
 <Module>
 <ModulePrefs title="香港天氣報告" 
 	directory_title="Hong Kong Weather Report"
@@ -861,7 +861,6 @@ function createIcon(sTitle, sIcon, sTips) {
 	}
 	return container;
 }
-
 /* Main */
 function showInfo() {
 	
@@ -875,8 +874,9 @@ function showInfo() {
 
 	var params = {};
 	params[gadgets.io.RequestParameters.CONTENT_TYPE] = gadgets.io.ContentType.JSON;
+	params[gadgets.io.RequestParameters.REFRESH_INTERVAL] = 360; // cache feed for 6 minutes only
 	gadgets.io.makeRequest(sGatewayUrl, fetchGatewayCompleted, params);
-
+	
 	// Calculate Lunar Calendar Info
 	var today = new Date(); 
 	calculateLunar( today ); 
