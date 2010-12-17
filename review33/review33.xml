@@ -130,7 +130,7 @@ function fnPreview(r33ItemId) {
 	
 	var params = {};
 	params[gadgets.io.RequestParameters.CONTENT_TYPE] = gadgets.io.ContentType.TEXT;
-	gadgets.io.makeRequest(sUrl, fetchPreview, params);	
+	gadgets.io.makeRequest(sUrl, fetchPreview2, params);	
 	
 //	_IG_FetchContent(sUrl, _IG_Callback(fetchPreview));
 }
@@ -286,20 +286,23 @@ function fixEvilText(html) {
 	return validedText;	
 }
 
-function fetchPreview(responseText) {	
+function fetchPreview2(responseText) {	
 	try {
 		var validedText = fixEvilText(responseText);
 		var doc = document.createElement("div");
 		doc.innerHTML = validedText;
-		
+			
 		var tbl = doc.getElementsByTagName("table");
 		var sHtml = "Cannot preview";
 		if ( tbl != null ) {
 			sHtml = "";
-			for ( var i=2; i < tbl.length -2; i ++ ) {
+			for ( var i=0; i < tbl.length; i ++ ) {
 				var td = tbl[i].getElementsByTagName('td');
-				if ( td != null && td.length >= 3 ) {
-                    var sItem = '';
+				if ( td != null && td.length >= 3 ) { // determine it is reply, if reply script exist
+					if ( td[0].innerHTML.indexOf("javascript:openWin('forumWin'") == -1 ) {
+						continue;
+					}
+					var sItem = '';
 					var sContent = td[0].innerHTML;
                     // find first <br/> to remove first anchor tag
                     var pos = sContent.indexOf('<br>');
@@ -333,7 +336,7 @@ function fetchPreview(responseText) {
 		_gel("r33_tab_preview").innerHTML = sHtml;
 	}
 	catch(e) {
-		fnWriteError("fetchPreview="+ e);
+		fnWriteError("fetchPreview2="+ e);
 		return false;	
 	}
 }
