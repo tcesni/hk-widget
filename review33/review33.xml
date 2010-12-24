@@ -215,13 +215,15 @@ function fetchXMLItemList(responseXML) {
 	return true;
 }
 
-function isItemInWishList(sTitle, sWishList) {
+function isItemInWishList(sTitle, saWishList) {
     // mark favorite in wish list
     if ( sWishList.length > 0 ) {
-        var regex = new RegExp(sWishList, "im");
-        if ( sTitle.match(regex) != null ) {
-    		return true;
-        }
+		for ( var i=0; i < sWishList.length; i ++ ) {
+			var regex = new RegExp(sWishList, "im");
+			if ( sTitle.match(regex) != null ) {
+				return true;
+			}
+		}
     }
     return false;
 }
