@@ -215,7 +215,7 @@ function fetchXMLItemList(responseXML) {
 	return true;
 }
 
-function isItemInWishList(sTitle, saWishList) {
+function isItemInWishList(sTitle, sWishList) {
     // mark favorite in wish list
     if ( sWishList.length > 0 ) {
 		for ( var i=0; i < sWishList.length; i ++ ) {
