@@ -130,7 +130,7 @@ function fnPreview(r33ItemId) {
 	
 	var params = {};
 	params[gadgets.io.RequestParameters.CONTENT_TYPE] = gadgets.io.ContentType.TEXT;
-	gadgets.io.makeRequest(sUrl, fetchPreview2, params);	
+	gadgets.io.makeRequest(sUrl, fetchPreview, params);	
 	
 //	_IG_FetchContent(sUrl, _IG_Callback(fetchPreview));
 }
@@ -154,7 +154,7 @@ function fetchXMLItemList(responseXML) {
 		var ul_1 = document.createElement("ul"); // sell
 		var ul_2 = document.createElement("ul"); // wanted
 
-		var sWishList = fnGetSearchPref().replace(' ', '|');
+		var sWishList = fnGetSearchPref().replace(/\s/g, '|');
 		var itemList = domdata.getElementsByTagName("item");
 		var bShowFavOnly = _gel('cbt3').checked;
 		var sell = 0;
@@ -218,10 +218,10 @@ function fetchXMLItemList(responseXML) {
 function isItemInWishList(sTitle, sWishList) {
     // mark favorite in wish list
     if ( sWishList.length > 0 ) {
-		var regex = new RegExp(sWishList, "im");
-		if ( sTitle.match(regex) != null ) {
-			return true;
-		}
+        var regex = new RegExp(sWishList, "im");
+        if ( sTitle.match(regex) != null ) {
+    		return true;
+        }
     }
     return false;
 }
@@ -286,23 +286,20 @@ function fixEvilText(html) {
 	return validedText;	
 }
 
-function fetchPreview2(responseText) {	
+function fetchPreview(responseText) {	
 	try {
 		var validedText = fixEvilText(responseText);
 		var doc = document.createElement("div");
 		doc.innerHTML = validedText;
-			
+		
 		var tbl = doc.getElementsByTagName("table");
 		var sHtml = "Cannot preview";
 		if ( tbl != null ) {
 			sHtml = "";
-			for ( var i=0; i < tbl.length; i ++ ) {
+			for ( var i=2; i < tbl.length -2; i ++ ) {
 				var td = tbl[i].getElementsByTagName('td');
-				if ( td != null && td.length >= 3 ) { // determine it is reply, if reply script exist
-					if ( td[0].innerHTML.indexOf("javascript:openWin('forumWin'") == -1 ) {
-						continue;
-					}
-					var sItem = '';
+				if ( td != null && td.length >= 3 ) {
+                    var sItem = '';
 					var sContent = td[0].innerHTML;
                     // find first <br/> to remove first anchor tag
                     var pos = sContent.indexOf('<br>');
@@ -336,24 +333,21 @@ function fetchPreview2(responseText) {
 		_gel("r33_tab_preview").innerHTML = sHtml;
 	}
 	catch(e) {
-		fnWriteError("fetchPreview2="+ e);
+		fnWriteError("fetchPreview="+ e);
 		return false;	
 	}
 }
 
 function magicView(html) {
 	var sOut = html;	
-	var m = html.match(/>(http:\/\/\w+\.photobucket.com\/albums\/\S+[.jpg|.gif|.png]<)/ig);
+	var m = html.match(/http:\/\/\w+\.photobucket.com\/albums\/\S+[.jpg|.gif|.png]/ig);
 	if ( m != null ) {
 		for ( var i = 0; i < m.length; i ++ ) {
 			var holder = m[i];
-			if ( holder && holder.length > 2 ) {
-				var mod = holder.substr(1, holder.length - 2);
-				var imgtab = '><img src=\"'+ mod +'\" border="0"><';
-				sOut = sOut.replace(holder, imgtab);
-			}
+			var imgtab = '<img src=\"'+ holder +'\">';
+			sOut = sOut.replace(holder, imgtab);
 		}
-	}
+	}	
 	return sOut.replace('<br/><br/>', '<br/>');
 }
 /*************************************************
@@ -367,7 +361,7 @@ function showInfo() {
 	fnUpdate();
 
 	// Register Analytics
-	_IG_Analytics("UA-760829-2", "/review33");	
+	// _IG_Analytics("UA-760829-2", "/review33");	
 }	 
 _IG_RegisterOnloadHandler(showInfo);
 // -->
