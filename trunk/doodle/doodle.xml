@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="UTF-8" ?> 
+<Module>
+<ModulePrefs title="Doodle Today"
+	directory_title="Doodle Today"
+	description="What is the doodle today ?"
+	title_url="http://www.google.com/logos/"
+	screenshot="http://hk-widget.googlecode.com/svn/trunk/doodle/doodle.png"
+	thumbnail="http://hk-widget.googlecode.com/svn/trunk/doodle/doodleico.png"
+	scrolling="false"
+	height="100"
+	singleton="false"
+	author="floatingcat"
+	author_photo="http://floatingcat.googlepages.com/chunmiu.png"
+	author_email="floatingcat@gmail.com"
+	author_aboutme="I'm a developer come from Hong Kong, China. "
+	author_affiliation="Google"
+	author_location="Hong Kong, CHINA"
+	author_link="http://floatingcat.blogspot.com/"
+	category="news"
+	category2="lifestyle">
+	<Locale lang="ALL_ALL" country="hk"/>
+	<Require feature="dynamic-height"/>  
+	<Require feature="analytics"/>
+	<Require feature="settitle" />  
+</ModulePrefs>
+<Content type="html">
+<![CDATA[  
+<div id="content_div"></div>
+<style type="text/css">
+table#viewer { width:100%; table-layout:fixed; }
+td#prev { width:12px; cursor:pointer; text-align:center }
+td#frame { overflow:hidden; width:176px; height:96px; text-align:center }
+td#next { width:12px; cursor:pointer; text-align:center }
+div#doodle { display:inline-block; width:176px; height:96px; text-align:center; }
+div#doodle img { width:176px; }
+div#doodle div.label { color:#999; width:176px; overflow:hidden; height:2.4em; font-size:9px }
+</style>
+<script type="text/javascript">
+/*****************************************************************************
+  Doodle Viewer
+*****************************************************************************/
+var saDoodleList = new Array();
+var doodleIdx = 0;
+function fetchDoodleResult(responseXml) {
+	try {
+		if (responseXml == null || typeof(responseXml) != "object" || responseXml.firstChild == null) {
+			_gel("content_div").innerHTML = "<i>Invalid data.</i>";
+			return;
+		}
+		var doodle_cnt = 0;
+		var today = new Date();
+		
+		var items = responseXml.getElementsByTagName("item");
+		if ( items && items.length > 0 ) {
+		for ( var i=0; i < items.length; i++ ) {		
+			var title = items[i].getElementsByTagName('title').item(0).childNodes[0].nodeValue;
+			var description = items[i].getElementsByTagName('description').item(0).childNodes[0].nodeValue;
+			description = description.replace(/[\r|\n|\r\n]/ig, '');
+			description = description.replace(/     /ig, '');
+			
+			var re1 = /[|\s+](Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[|\s+](\d+),[|\s+](\d+)/ig;
+			var saDate = re1.exec(description);
+			var date = '';
+			if ( saDate && saDate.length >= 4 ) {
+				date = new Date(saDate[1] +' '+ saDate[2] +', '+ saDate[3]);
+			}
+			
+			var re2 = /img src=\"(.*)\" /ig;
+			var saImage = re2.exec(description);
+			var imgurl = '';
+			if ( saImage && saImage.length >= 2 ) {
+				imgurl = saImage[1];
+			}
+			
+			if ( imgurl != '' && date != '' && date == today ) {
+				// if ( imgurl != '' && date != '' ) {
+				saDoodleList[doodle_cnt] = {
+					'url': imgurl,
+					'title': title,
+					'date': date
+				};
+				doodle_cnt ++;
+				}
+			}
+		}
+		
+		if ( doodle_cnt == 0 ) {
+			saDoodleList[doodle_cnt] = {
+				'url': 'http://www.google.com/images/srpr/logo3w.png',
+				'title': 'Google',
+				'date': ''
+			};
+		}
+		
+		var root = _gel("content_div");
+		var table = document.createElement('table');
+		table.setAttribute('id', 'viewer');
+		
+		var tbody = document.createElement('tbody');
+		var tr = document.createElement('tr');
+		
+		var td1 = document.createElement('td');
+		td1.setAttribute('id', 'prev');
+		td1.innerHTML = '&nbsp;<&nbsp;';
+		td1.addEventListener('click', showPrev);
+		
+		var td2 = document.createElement('td');
+		td2.setAttribute('id', 'frame');
+		
+		var td3 = document.createElement('td');
+		td3.setAttribute('id', 'next');
+		td3.innerHTML = '&nbsp;>&nbsp;';
+		td3.addEventListener('click', showNext);
+		
+		tr.appendChild(td1);
+		tr.appendChild(td2);
+		tr.appendChild(td3);
+		
+		tbody.appendChild(tr);
+		table.appendChild(tbody);
+		root.appendChild(table);
+		
+		showDoodle(0);
+		// _IG_SetTitle("Today Doodle is");
+	
+	} catch(e) {
+		_gel("content_div").innerHTML = "對不起, 暫時未能提供";
+		return false;
+	}
+	return true;
+}
+function showPrev() {
+	showDoodle(-1);
+}
+function showNext() {
+	showDoodle(1);
+}
+function showDoodle(dir) {
+	doodleIdx += dir;
+	if ( doodleIdx < 0 ) {
+		doodleIdx = 0;
+	}
+	if ( doodleIdx >= saDoodleList.length-1 ) {
+		doodleIdx = saDoodleList.length-1;
+	}
+	var preview = newDoodle(saDoodleList[doodleIdx]);
+	var el = _gel('frame');
+	if ( el ) {
+		el.innerHTML = '';
+		el.appendChild(preview);
+	}
+}
+function newDoodle(doodle) {
+	var viewer = document.createElement('div');
+	viewer.setAttribute('id', 'doodle');
+
+	var img = document.createElement('img');
+	img.setAttribute('src', doodle['url']);
+	img.setAttribute('title', doodle['title']);
+
+	var label = document.createElement('div');
+	label.setAttribute('class', 'label');
+	label.innerHTML = doodle['title'];  
+	viewer.appendChild(img);
+	viewer.appendChild(label);
+	return viewer;
+}
+/*****************************************************************************
+  Main function
+*****************************************************************************/  
+function gadgetMain() {
+	var sDoodleRssUrl = "http://www.google.com/logos/logos.xml";
+	_gel('content_div').innerHTML = "";
+	_IG_FetchXmlContent(sDoodleRssUrl, _IG_Callback(fetchDoodleResult));
+	_IG_AdjustIFrameHeight();
+	_IG_Analytics("UA-760829-2", "/doodle");
+}   
+_IG_RegisterOnloadHandler(gadgetMain);
+</script>
+]]>
+</Content>
+</Module>​
