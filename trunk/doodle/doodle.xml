@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?> 
 <Module>
 <ModulePrefs title="Doodle Today"
-	directory_title="Doodle Today"
 	description="What is the doodle today ?"
 	title_url="http://www.google.com/logos/"
 	screenshot="http://hk-widget.googlecode.com/svn/trunk/doodle/doodle.png"
@@ -18,10 +17,11 @@
 	author_link="http://floatingcat.blogspot.com/"
 	category="news"
 	category2="lifestyle">
-	<Locale lang="ALL_ALL" country="hk"/>
-	<Require feature="dynamic-height"/>  
-	<Require feature="analytics"/>
-	<Require feature="settitle" />  
+	<Require feature="analytics"/>	
+	<Require feature="setprefs" /> 
+	<Require feature="dynamic-height" /> 
+  	<Locale lang="zh-tw" country="hk" />
+  	<Locale lang="en" country="us" />	
 </ModulePrefs>
 <Content type="html">
 <![CDATA[  
@@ -36,9 +36,6 @@ div#doodle img { width:176px; }
 div#doodle div.label { color:#999; width:176px; overflow:hidden; height:2.4em; font-size:9px }
 </style>
 <script type="text/javascript">
-/*****************************************************************************
-  Doodle Viewer
-*****************************************************************************/
 var saDoodleList = new Array();
 var doodleIdx = 0;
 function fetchDoodleResult(responseXml) {
@@ -121,7 +118,6 @@ function fetchDoodleResult(responseXml) {
 		root.appendChild(table);
 		
 		showDoodle(0);
-		// _IG_SetTitle("Today Doodle is");
 	
 	} catch(e) {
 		_gel("content_div").innerHTML = "對不起, 暫時未能提供";
@@ -165,9 +161,6 @@ function newDoodle(doodle) {
 	viewer.appendChild(label);
 	return viewer;
 }
-/*****************************************************************************
-  Main function
-*****************************************************************************/  
 function gadgetMain() {
 	var sDoodleRssUrl = "http://www.google.com/logos/logos.xml";
 	_gel('content_div').innerHTML = "";
@@ -177,6 +170,6 @@ function gadgetMain() {
 }   
 _IG_RegisterOnloadHandler(gadgetMain);
 </script>
-]]>
-</Content>
-</Module>​
+  ]]>
+  </Content>
+</Module>
